@@ -4,7 +4,7 @@
  *	Project: http-request-js
  */
 
-import { HTTPRequest } from "./http-request";
+import { OutgoingHTTPRequest } from "./outgoing-http-request";
 
 /**
  * NPM main class used for exporting this package's contents.
@@ -16,7 +16,7 @@ import { HTTPRequest } from "./http-request";
 
 // export { ClassName } from "./class-location";
 
-let myReq: HTTPRequest = new HTTPRequest();
+let myReq: OutgoingHTTPRequest = new OutgoingHTTPRequest("GET", "http://www.google.com/");
 
 myReq.getHeadersManager().setHeader("Accept", "audio/*, video/*");
 
