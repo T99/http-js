@@ -24,10 +24,16 @@ export class HTTPMethod {
 		
 	}
 	
-	public static normalizeHTTPMethod(httpMethod: HTTPMethodable): string {
+	public static normalizeHTTPMethod(httpMethod: HTTPMethodable): HTTPMethod {
 		
-		if (httpMethod instanceof HTTPMethod) return httpMethod.getName();
-		else return httpMethod;
+		if (httpMethod instanceof HTTPMethod) return httpMethod;
+		else if (typeof httpMethod === "string") return new HTTPMethod(httpMethod);
+		else {
+			
+			throw new Error("Failed to normalize value to HTTPMethod instance, expected HTTPMethod instance or " +
+				`string, received type '${typeof httpMethod}' instead.`);
+			
+		}
 		
 	}
 	
