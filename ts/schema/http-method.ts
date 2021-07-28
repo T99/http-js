@@ -2,13 +2,25 @@ export type HTTPMethodable = HTTPMethod | string;
 
 export class HTTPMethod {
 	
+	public static readonly DELETE: HTTPMethod = new HTTPMethod("DELETE");
+	
 	public static readonly GET: HTTPMethod = new HTTPMethod("GET");
+	
+	public static readonly HEAD: HTTPMethod = new HTTPMethod("DELETE");
 	
 	public static readonly POST: HTTPMethod = new HTTPMethod("POST");
 	
+	/**
+	 * The HTTP 'PUT' method serves to either create or replace the target resource with, or based on, the payload of
+	 * the request.
+	 */
 	public static readonly PUT: HTTPMethod = new HTTPMethod("PUT");
 	
-	public static readonly DELETE: HTTPMethod = new HTTPMethod("DELETE");
+	/**
+	 * The HTTP 'TRACE' method is similar in function to a network 'ping'. The original TRACE request is forwarded to
+	 * its intended destination, and then mirrored back to the origin client as the body of a 200 OK response.
+	 */
+	public static readonly TRACE: HTTPMethod = new HTTPMethod("TRACE");
 	
 	protected methodName: string;
 	
