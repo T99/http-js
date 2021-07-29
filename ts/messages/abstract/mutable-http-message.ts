@@ -1,14 +1,14 @@
 import { ImmutableHTTPMessage } from "./immutable-http-message";
-import { HTTPHeaders } from "./schema/immutable-http-headers-manager";
-import { MutableHTTPHeadersManager } from "./schema/mutable-http-headers-manager";
-import { HTTPMethod, HTTPMethodable } from "./schema/http-method";
+import { ParseableHTTPHeaders } from "../../headers/immutable-http-headers-manager";
+import { MutableHTTPHeadersManager } from "../../headers/mutable-http-headers-manager";
+import { HTTPMethod, HTTPMethodable } from "../../schema/http-method";
 
 export abstract class MutableHTTPMessage extends ImmutableHTTPMessage {
 	
 	protected headersManager!: MutableHTTPHeadersManager;
 	
 	protected constructor(method: HTTPMethodable, url: string | URL,
-						  headersOrHeadersManager?: HTTPHeaders | MutableHTTPHeadersManager) {
+						  headersOrHeadersManager?: ParseableHTTPHeaders | MutableHTTPHeadersManager) {
 		
 		// If the value being passed for the headers of this message is not a pre-baked MutableHTTPHeadersManager...
 		if (!(headersOrHeadersManager instanceof MutableHTTPHeadersManager)) {
@@ -29,7 +29,7 @@ export abstract class MutableHTTPMessage extends ImmutableHTTPMessage {
 		
 	}
 	
-	public setURL(url: string | URL) {
+	public setURL(url: string | URL): void {
 		
 		if (typeof url === "string") this.url = new URL(url);
 		else this.url = url;

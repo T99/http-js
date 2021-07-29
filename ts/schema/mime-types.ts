@@ -1,4 +1,4 @@
-export type MIMEType = string
+export type StringMIMEType = string
 	| "application/json"
 	| "application/octet-stream"
 	| "application/ogg"
@@ -29,67 +29,81 @@ export type MIMEType = string
 	| "video/ogg"
 	| "video/webm";
 
+export type PreloadType =
+	  "audio"
+	| "document"
+	| "embed"
+	| "fetch"
+	| "font"
+	| "image"
+	| "object"
+	| "script"
+	| "style"
+	| "track"
+	| "worker"
+	| "video";
+
 type ExtensionMapType = {
 	
 	[fileExtension: string]: {
 		
-		contentType: MIMEType,
-		preloadType: string
+		contentType: StringMIMEType,
+		preloadType: PreloadType
 		
 	}
 	
 };
 
-export class MIMETypeUtilities {
+export const EXTENSION_MAP: ExtensionMapType = {
 	
-	protected static EXTENSION_MAP: ExtensionMapType = {
-		
-		"html": {
-			contentType: "text/html",
-			preloadType: "document"
-		},
-		"css": {
-			contentType: "text/css",
-			preloadType: "style"
-		},
-		"js": {
-			contentType: "text/javascript",
-			preloadType: "script"
-		},
-		"jpg": {
-			contentType: "image/jpeg",
-			preloadType: "image",
-		},
-		"jpeg": {
-			contentType: "image/jpeg",
-			preloadType: "image",
-		},
-		"png": {
-			contentType: "image/png",
-			preloadType: "image"
-		},
-		"ico": {
-			contentType: "image/x-icon",
-			preloadType: "image"
-		},
-		"gif": {
-			contentType: "image/gif",
-			preloadType: "image"
-		},
-		"svg": {
-			contentType: "image/svg+xml",
-			preloadType: "image"
-		},
-		"mp4": {
-			contentType: "image/mp4",
-			preloadType: "video"
-		}
-		
-	};
+	"html": {
+		contentType: "text/html",
+		preloadType: "document"
+	},
+	"css": {
+		contentType: "text/css",
+		preloadType: "style"
+	},
+	"js": {
+		contentType: "text/javascript",
+		preloadType: "script"
+	},
+	"jpg": {
+		contentType: "image/jpeg",
+		preloadType: "image",
+	},
+	"jpeg": {
+		contentType: "image/jpeg",
+		preloadType: "image",
+	},
+	"png": {
+		contentType: "image/png",
+		preloadType: "image"
+	},
+	"ico": {
+		contentType: "image/x-icon",
+		preloadType: "image"
+	},
+	"gif": {
+		contentType: "image/gif",
+		preloadType: "image"
+	},
+	"svg": {
+		contentType: "image/svg+xml",
+		preloadType: "image"
+	},
+	"mp4": {
+		contentType: "image/mp4",
+		preloadType: "video"
+	}
+	
+};
+
+export class MIMETypeUtilities {
 
 	protected static TEXTUAL_CONTENT_TYPE_REGEX: RegExp = /a/;
 
-	public static getContentTypeFromFile(path: string): MIMEType {
+	public static getContentTypeFromFile(path: string): StringMIMEType {
 		
 		let fileExtensionDotIndex: number = path.lastIndexOf(".");
 		
@@ -102,22 +116,22 @@ export class MIMETypeUtilities {
 		
 		let fileExtension: string = path.substring(fileExtensionDotIndex + 1);
 		
-		if (MIMETypeUtilities.EXTENSION_MAP[fileExtension] !== undefined) {
+		if (EXTENSION_MAP[fileExtension] !== undefined) {
 			
-			return MIMETypeUtilities.EXTENSION_MAP[fileExtension].contentType;
+			return EXTENSION_MAP[fileExtension].contentType;
 			
 		} else {
 			
 			return "text/plain";
 			
-			// throw new Errpr(`Attempted to guess MIME/Content-Type of file: '${path}', but did not recognize ` +
+			// throw new Error(`Attempted to guess MIME/Content-Type of file: '${path}', but did not recognize ` +
 			// 	`extension '${fileExtension}'.`);
 			
 		}
 		
 	}
 	
-	public static isContentTypeTextual(contentType: MIMEType): boolean {
+	public static isContentTypeTextual(contentType: StringMIMEType): boolean {
 		
 		// TODO [7/27/2021 @ 8:48 AM] I'm not sure that this is correct...
 		

@@ -1,7 +1,8 @@
-import { HTTPMethod, HTTPMethodable } from "./schema/http-method";
-import { HTTPHeaders, ImmutableHTTPHeadersManager } from "./schema/immutable-http-headers-manager";
+import { HTTPMethod, HTTPMethodable } from "../../schema/http-method";
+import { ParseableHTTPHeaders, ImmutableHTTPHeadersManager } from "../../headers/immutable-http-headers-manager";
+import { HTTPMessage } from "../interfaces/http-message";
 
-export abstract class ImmutableHTTPMessage {
+export abstract class ImmutableHTTPMessage implements HTTPMessage {
 	
 	protected method: HTTPMethod;
 	
@@ -9,8 +10,10 @@ export abstract class ImmutableHTTPMessage {
 	
 	protected headersManager: ImmutableHTTPHeadersManager;
 	
+	protected body: any;
+	
 	protected constructor(method: HTTPMethodable, url: string | URL,
-						  headersOrHeadersManager?: HTTPHeaders | ImmutableHTTPHeadersManager) {
+						  headersOrHeadersManager?: ParseableHTTPHeaders | ImmutableHTTPHeadersManager) {
 		
 		this.method = HTTPMethod.normalizeHTTPMethod(method);
 		
@@ -39,17 +42,27 @@ export abstract class ImmutableHTTPMessage {
 	/**
 	 * Returns the URL for this HTTP message.
 	 * 
+	 * Note that the returned URL instance is a copy of the actual internal URL, and thus the returned object cannot be
+	 * used to modify the internal URL.
+	 * 
 	 * @return {URL} The URL for this HTTP message.
 	 */
 	public getURL(): URL {
 		
-		return this.url;
+		// Return a copy of the internal URL so that callers can't use the return value to modify internal state.
+		return new URL(this.url.toString());
 		
 	}
 	
 	public getHeadersManager(): ImmutableHTTPHeadersManager {
 		
 		return this.headersManager;
+		
+	}
+	
+	public getBody(): any {
+		
+		return this.body;
 		
 	}
 	

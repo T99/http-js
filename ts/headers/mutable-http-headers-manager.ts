@@ -1,7 +1,17 @@
-import { ImmutableHTTPHeadersManager } from "./immutable-http-headers-manager";
-import { MIMEType } from "./mime-types";
+import { HTTPHeaders, ImmutableHTTPHeadersManager } from "./immutable-http-headers-manager";
+import { StringMIMEType } from "../schema/mime-types";
 
 export class MutableHTTPHeadersManager extends ImmutableHTTPHeadersManager {
+	
+	/**
+	 * Returns an object containing all of the HTTP headers and their values for this collection of headers.
+	 * 
+	 * @returns {HTTPHeaders} An object containing all of the HTTP headers and their values for this collection of
+	 * headers.
+	 */
+	public getHeaders(): HTTPHeaders {
+		return this.headers;
+	}
 	
 	/**
 	 * Sets the specified HTTP header to the given value(s).
@@ -26,12 +36,12 @@ export class MutableHTTPHeadersManager extends ImmutableHTTPHeadersManager {
 	 * @param {HTTPHeaderField} field
 	 * @param {string[]} value
 	 */
-	public setHeader(field: "Content-Type" | "Accept", value: MIMEType): void;
+	public setHeader(field: "Content-Type" | "Accept", value: StringMIMEType): void;
 	public setHeader(field: HTTPHeaderField, ...value: string[]): void;
 	public setHeader(field: HTTPHeaderField, ...values: string[]): void {
 		
 		this.headers[field.toLowerCase()] = {
-			originalField: values.map(() => field),
+			originalFields: values.map((): string => field),
 			values
 		};
 		
@@ -41,13 +51,13 @@ export class MutableHTTPHeadersManager extends ImmutableHTTPHeadersManager {
 	public removeHeader(field: HTTPHeaderField, ...values: string[]): string[];
 	public removeHeader(field: HTTPHeaderField, matcher: (value: string) => boolean): string[];
 	public removeHeader(field: HTTPHeaderField,
-						valuesOrMatcher: string | ((value: string) => boolean) | undefined = undefined,
+						firstValueOrMatcher: string | ((value: string) => boolean) | undefined = undefined,
 						...rest: string[]): string[] | undefined {
 		
 		// Transform the field name to lower case for lookup purposes.
 		field = field.toLowerCase();
 		
-		let valueOrMatcherType: string = typeof valuesOrMatcher;
+		let valueOrMatcherType: string = typeof firstValueOrMatcher;
 		
 		if (valueOrMatcherType === "string") {
 		

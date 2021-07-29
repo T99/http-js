@@ -6,11 +6,11 @@
  * <pre>
  * {
  *     "accept": {
- *         originalField: ["Accept"],
+ *         originalFields: ["Accept"],
  *         values: ["image/png, image/webp", "image/jpg"]
  *     }
  *     "connection": {
- *         originalField: ["Connection"],
+ *         originalFields: ["Connection"],
  *         values: ["keep-alive"]
  *     }
  * }
@@ -31,7 +31,7 @@ export type HTTPHeaders = {
 		 *
 		 * Each element of this array matches to it's respective value in the 'values' array.
 		 */
-		originalField: string[],
+		originalFields: string[],
 		
 		/**
 		 * An array of the values for this HTTP header field.
@@ -47,7 +47,7 @@ export type HTTPHeaders = {
 		 * <pre>
 		 * {
 		 *     "accept": {
-		 *         originalField: ["Accept", "accept"],
+		 *         originalFields: ["Accept", "accept"],
 		 *         values: ["image/png, image/webp", "image/jpg"]
 		 *     }
 		 * }
@@ -58,6 +58,24 @@ export type HTTPHeaders = {
 	}
 	
 };
+
+/**
+ * A user-friendly version of the HTTPHeaders type that allows for more flexibility during the initialization of
+ * HTTPHeadersManager instances.
+ */
+export type ParseableHTTPHeaders = {
+	
+	[field: string]: string | string[] | {
+		
+		originalFields?: string | string[],
+		
+		values: string | string[]
+		
+	};
+	
+};
+
+type FieldTransformer = (field: string) => string;
 
 /**
  * Represents the pertinent information stored in a single 'Accept' header value.
@@ -80,7 +98,7 @@ type AcceptHeaderValue = {
 	mimePrimaryType: string,
 	mimeSecondaryType: string,
 	relativeQualityFactor: number
-}
+};
 
 /**
  * Matches the various parts of each 'Accept' value:
@@ -106,7 +124,7 @@ function parseAcceptHeaderValue(rawValue: string): AcceptHeaderValue | undefined
 		// If we found a value for the relative quality factor...
 		if (matches?.length >= 4) {
 			
-			let parsedNumericValue = parseFloat(matches[3]);
+			let parsedNumericValue: number = parseFloat(matches[3]);
 			
 			// Make sure that the value wasn't somehow malformed.
 			// This check shouldn't be necessary based on the above Regex, but better safe than erroring.
@@ -124,20 +142,101 @@ function parseAcceptHeaderValue(rawValue: string): AcceptHeaderValue | undefined
 export class ImmutableHTTPHeadersManager {
 	
 	/**
+	 * A function that transforms HTTP header field names from whatever form/case they are in, to 'Title Case'.
+	 * 
+	 * Example:
+	 * <pre>
+	 *     TITLE_CASE_FIELD_TRANSFORMER("content-security-policy") --> "Content-Security-Policy"
+	 * </pre>
+	 * 
+	 * @param {string} field The HTTP header field name to transform to 'Title Case'.
+	 * @returns {string} The 'Title Case' transformed input string.
+	 */
+	public static readonly TITLE_CASE_FIELD_TRANSFORMER: FieldTransformer = (field: string): string => {
+		
+		return field.split("-").map((component: string): string => {
+			return component.charAt(0).toUpperCase() + component.substring(1).toLowerCase();
+		}).join("-");
+		
+	};
+	
+	public static readonly LOWER_CASE_FIELD_TRANSFORMER: FieldTransformer =
+		(field: string): string => field.toLowerCase();
+	
+	public static readonly UPPER_CASE_FIELD_TRANSFORMER: FieldTransformer =
+		(field: string): string => field.toUpperCase();
+	
+	/**
 	 * A collection of HTTP headers.
 	 *
 	 * @see HTTPHeaders
 	 */
 	protected headers: HTTPHeaders;
 	
+	protected headerFieldTransformer: FieldTransformer;
+	
 	/**
 	 * Initializes a new ImmutableHTTPHeadersManager instance with the provided HTTP headers.
 	 *
 	 * @param {HTTPHeaders} headers The HTTP headers with which to initialize this ImmutableHTTPHeadersManager instance.
+	 * @param {FieldTransformer} headerFieldTransformer
 	 */
-	public constructor(headers: HTTPHeaders = {}) {
+	public constructor(headers: ParseableHTTPHeaders = {}, headerFieldTransformer?: FieldTransformer) {
 		
-		this.headers = headers;
+		this.headers = {};
+		this.headerFieldTransformer = headerFieldTransformer ?? ((field: string): string => field);
+		
+		for (let field of Object.keys(headers)) {
+			
+			let standardizedField: string = ImmutableHTTPHeadersManager.getStandardizedHeaderField(field);
+			
+			if (typeof headers[field] === "string") {
+				
+				this.headers[standardizedField] = {
+					
+					originalFields: [field],
+					values: [headers[field] as string]
+					
+				};
+				
+			} else if (Array.isArray(headers[field])) {
+				
+				this.headers[standardizedField] = {
+					
+					originalFields: (headers[field] as string[]).map((): string => field),
+					values: headers[field] as string[]
+					
+				};
+				
+			} else if ((headers[field] as any)?.values !== undefined) {
+				
+				let inputOriginalFields: any = (headers[field] as any)?.originalFields;
+				let inputValues: any = (headers[field] as any)?.values;
+				
+				let value: HTTPHeaders[keyof HTTPHeaders] = {
+					originalFields: undefined as any,
+					values: undefined as any
+				};
+				
+				if (typeof inputValues === "string") value.values = [inputValues];
+				else if (Array.isArray(inputValues)) value.values = inputValues;
+				else continue; // The object was improperly formatted, so ignore it.
+				
+				if (typeof inputOriginalFields === "string") value.originalFields = [inputOriginalFields];
+				else if (Array.isArray(inputOriginalFields)) value.originalFields = inputOriginalFields;
+				else continue; // The object was improperly formatted, so ignore it.
+				
+				this.headers[standardizedField] = value;
+				
+			} // Otherwise, ignore it.
+			
+		}
+		
+	}
+	
+	public static getStandardizedHeaderField(field: string): string {
+		
+		return field.toLowerCase();
 		
 	}
 	
@@ -163,11 +262,17 @@ export class ImmutableHTTPHeadersManager {
 	 * Note that this function does not return the fields associated with the returned fields, but rather simply an
 	 * array containing the field names.
 	 *
+	 * @param {FieldTransformer | undefined} fieldTransformer An optional function taking a string that applies a
+	 * desired string transformation and returns the resulting string. Applied to each header field name if provided.
 	 * @return {string[]} An array of the HTTP header fields present on this collection of headers.
 	 */
-	public getHeaderFields(): string[] {
+	public getHeaderFields(fieldTransformer?: FieldTransformer): string[] {
 		
-		return Object.keys(this.headers);
+		let fields: string[] = Object.keys(this.headers);
+		
+		if (fieldTransformer !== undefined) fields = fields.map(fieldTransformer);
+		
+		return fields;
 		
 	}
 	
@@ -179,8 +284,7 @@ export class ImmutableHTTPHeadersManager {
 	 */
 	public hasHeader(field: HTTPHeaderField): boolean {
 		
-		// Transform the field name to lower case for lookup purposes.
-		field = field.toLowerCase();
+		field = ImmutableHTTPHeadersManager.getStandardizedHeaderField(field);
 		
 		return (
 			this.headers[field] !== undefined &&
@@ -198,8 +302,7 @@ export class ImmutableHTTPHeadersManager {
 	 */
 	public getHeader(field: HTTPHeaderField): string[] | undefined {
 		
-		// Transform the field name to lower case for lookup purposes.
-		field = field.toLowerCase();
+		field = ImmutableHTTPHeadersManager.getStandardizedHeaderField(field);
 		
 		if (this.hasHeader(field)) return this.headers[field].values;
 		else return undefined;
@@ -221,8 +324,7 @@ export class ImmutableHTTPHeadersManager {
 	 */
 	public getAuthoritativeHeader(field: HTTPHeaderField): string | undefined {
 		
-		// Transform the field name to lower case for lookup purposes.
-		field = field.toLowerCase();
+		field = ImmutableHTTPHeadersManager.getStandardizedHeaderField(field);
 		
 		if (this.hasHeader(field)) {
 			
@@ -274,19 +376,21 @@ export class ImmutableHTTPHeadersManager {
 	public getPreferredFormats(preferAuthoritativeHeader: boolean, collapseToStrings: false): AcceptHeaderValue[];
 	public getPreferredFormats(preferAuthoritativeHeader: boolean = true, collapseToStrings: boolean = true): string[] | AcceptHeaderValue[] {
 		
+		// TODO [7/28/21 @ 8:47 PM] Generify this method - other heads also use the 'q' parameter.
+		
 		// If the 'Accept' header isn't present
 		if (!this.hasHeader("Accept")) return ["*/*"];
 		
 		let acceptedFormats: AcceptHeaderValue[] = [];
 		
-		function processAcceptHeaderValue(value: string): void {
+		function processAcceptHeaderValue(rawFieldValue: string): void {
 			
 			// Sanitize and separate the values for the authoritative 'Accept' header into an array of strings.
-			let values: string[] = value.trim().split(/,\s+/);
+			let splitValues: string[] = rawFieldValue.trim().split(/,\s+/);
 			
-			for (let value of values) {
+			for (let splitValue of splitValues) {
 				
-				let parsedValue: AcceptHeaderValue | undefined = parseAcceptHeaderValue(value);
+				let parsedValue: AcceptHeaderValue | undefined = parseAcceptHeaderValue(splitValue);
 				
 				if (parsedValue !== undefined) acceptedFormats.push(parsedValue);
 				// Otherwise, ignore the non-standard/malformed value and move on.
@@ -322,10 +426,10 @@ export class ImmutableHTTPHeadersManager {
 				let element1Priority: number = 0;
 				let element2Priority: number = 0;
 				
-				if (element1.mimePrimaryType != "*") element1Priority += 2;
-				if (element2.mimePrimaryType != "*") element2Priority += 2;
-				if (element1.mimeSecondaryType != "*") element1Priority += 1;
-				if (element2.mimeSecondaryType != "*") element2Priority += 1;
+				if (element1.mimePrimaryType !== "*") element1Priority += 2;
+				if (element2.mimePrimaryType !== "*") element2Priority += 2;
+				if (element1.mimeSecondaryType !== "*") element1Priority += 1;
+				if (element2.mimeSecondaryType !== "*") element2Priority += 1;
 				
 				return element2Priority - element1Priority;
 				
@@ -335,7 +439,7 @@ export class ImmutableHTTPHeadersManager {
 		
 		if (collapseToStrings) {
 			
-			return acceptedFormats.map((element: AcceptHeaderValue) => {
+			return acceptedFormats.map((element: AcceptHeaderValue): string => {
 				
 				return `${element.mimePrimaryType}/${element.mimeSecondaryType}`;
 				
@@ -392,5 +496,80 @@ export class ImmutableHTTPHeadersManager {
 		// Convert the array into a set (removing duplicates), and then convert it back.
 		return Array.from(new Set(preferredSupportedFormats));
 	
+	}
+	
+	/**
+	 * Returns a string representation of this ImmutableHeadersManager class, formatted as though it were part of an
+	 * actual HTTP message header.
+	 *
+	 * @param {boolean | undefined} useOriginalFieldName If set to true, the resulting string will use the HTTP field
+	 * names provided during initialization or through mutation. Otherwise, a standardized form of the field name will
+	 * be used.
+	 * @param {FieldTransformer | undefined} fieldTransformer An optional function taking a string that applies a
+	 * desired string transformation and returns the resulting string. Applied to each header field name if provided.
+	 * @returns {string} A string representation of this ImmutableHeadersManager class, formatted as though it were part
+	 * of an actual HTTP message header.
+	 */
+	public toString(useOriginalFieldName?: boolean): string;
+	public toString(fieldTransformer?: FieldTransformer): string;
+	public toString(useOriginalFieldName?: boolean, fieldTransformer?: FieldTransformer): string;
+	public toString(useOriginalFieldNameOrFieldTransformer?: boolean | FieldTransformer, fieldTransformer?: FieldTransformer): string {
+		
+		// Why not just make everything complicated? 
+		
+		let useOriginalFieldName: boolean = false;
+		
+		switch (arguments.length) {
+			
+			case 0:
+				// Do nothing!
+				break;
+			
+			case 1:
+				if (typeof useOriginalFieldNameOrFieldTransformer === "boolean") {
+					
+					useOriginalFieldName = useOriginalFieldNameOrFieldTransformer;
+					
+				} else fieldTransformer = useOriginalFieldNameOrFieldTransformer;
+				break;
+			
+			case 2:
+				useOriginalFieldName = useOriginalFieldNameOrFieldTransformer as boolean;
+				break;
+				
+			default:
+				// This case should never occur - typechecking was ignored, so we'll do the same.
+				// That should teach em'.
+				return undefined as unknown as string;
+			
+		}
+		
+		let result: string = "";
+		
+		for (let standardizedFieldName of this.getHeaderFields()) {
+			
+			let field: HTTPHeaders[keyof HTTPHeaders] = this.headers[standardizedFieldName];
+			
+			for (let valueIndex: number = 0; valueIndex < field.values.length; valueIndex++) {
+				
+				let outputFieldName!: string;
+				
+				// If the list of original field names is long enough that we can grab the original field name from it,
+				// do so, otherwise default to the standardized field name.
+				if (useOriginalFieldName &&
+					(valueIndex < field.originalFields.length)) outputFieldName = field.originalFields[valueIndex];
+				else outputFieldName = standardizedFieldName;
+				
+				// Transform the field using the provided field transformer, if one was provided.
+				if (fieldTransformer !== undefined) outputFieldName = fieldTransformer(outputFieldName);
+				
+				result += `${outputFieldName}: ${field.values[valueIndex]}\n`;
+				
+			}
+			
+		}
+		
+		return result;
+		
 	}
 }

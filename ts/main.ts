@@ -4,8 +4,6 @@
  *	Project: http-request-js
  */
 
-import { OutgoingHTTPRequest } from "./outgoing-http-request";
-
 /**
  * NPM main class used for exporting this package's contents.
  *
@@ -15,13 +13,3 @@ import { OutgoingHTTPRequest } from "./outgoing-http-request";
  */
 
 // export { ClassName } from "./class-location";
-
-let myReq: OutgoingHTTPRequest = new OutgoingHTTPRequest("GET", "http://www.google.com/");
-
-myReq.getHeadersManager().setHeader("Accept", "audio/*, video/*");
-
-console.log(myReq.getHeadersManager().getPreferredFormats(false));
-console.log(myReq.getHeadersManager().getPreferredSupportedFormats(
-	["audio/v2", "audio/v1", "video/v1", "video/v2", "text/v1", "text/v2"],
-	false
-));
