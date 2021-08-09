@@ -311,6 +311,10 @@ export class HTTPStatusCode {
 		this.title = title;
 		this.explanation = explanation;
 		
+		// We want to strictly prevent mutation of HTTPStatusCode references so that their semantic value CANNOT and
+		// WILL NOT be changed by users down-the-line. See HTTPMethod#constructor for more info.
+		Object.freeze(this);
+		
 	}
 	
 	/**
