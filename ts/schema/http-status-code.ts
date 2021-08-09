@@ -331,6 +331,8 @@ export class HTTPStatusCode {
 	/**
 	 * Returns the 'title' or short description of this particular HTTP status code.
 	 *
+	 * @param {boolean} includeHTTP Whether or not to include the 'HTTP_' prefix in the title of the status code.
+	 * Defaults to true.
 	 * @return {string} The 'title' or short description of this particular HTTP status code.
 	 */
 	public getTitle(includeHTTP: boolean = true): string {
