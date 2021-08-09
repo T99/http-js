@@ -1,12 +1,11 @@
-import { HTTPRequest } from "../messages/interfaces/http-request";
+import { ImmutableHTTPRequest } from "../messages/base/immutable-http-request";
 
-// DOC-ME [7/28/21 @ 8:35 PM] Documentation required!
 export class HTTPRequestError extends Error {
 	
 	/**
 	 * The HTTP request that originated this error.
 	 */
-	protected originatingRequest: HTTPRequest;
+	protected originatingRequest: ImmutableHTTPRequest;
 	
 	/**
 	 * The Error that lead to the creation of this Error instance.
@@ -20,7 +19,7 @@ export class HTTPRequestError extends Error {
 	 * @param {string} message An optional message describing the error.
 	 * @param {Error} parentError The Error that lead to the creation of this Error instance.
 	 */
-	public constructor(originatingRequest: HTTPRequest, message?: string, parentError?: Error) {
+	public constructor(originatingRequest: ImmutableHTTPRequest, message?: string, parentError?: Error) {
 		
 		super(message);
 		
@@ -34,7 +33,7 @@ export class HTTPRequestError extends Error {
 	 * 
 	 * @returns {HTTPRequest} The HTTP request that originated this error.
 	 */
-	public getOriginatingRequest(): HTTPRequest {
+	public getOriginatingRequest(): ImmutableHTTPRequest {
 		
 		return this.originatingRequest;
 		

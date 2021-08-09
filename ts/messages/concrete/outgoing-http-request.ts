@@ -1,14 +1,13 @@
 import net from "net";
 import http from "http";
 import https from "https";
-import { MutableHTTPMessage } from "../abstract/mutable-http-message";
 import { HTTPMethodable } from "../../schema/http-method";
 import { HTTPRequestError } from "../../error/http-request-error";
-import { HTTPRequest } from "../interfaces/http-request";
-import { HTTPResponse } from "../interfaces/http-response";
 import { IncomingHTTPResponse } from "./incoming-http-response";
+import { MutableHTTPRequest } from "../base/mutable-http-request";
+import { HTTPStatusCode } from "../../schema/http-status-code";
 
-export class OutgoingHTTPRequest extends MutableHTTPMessage implements HTTPRequest {
+export class OutgoingHTTPRequest extends MutableHTTPRequest {
 	
 	protected static readonly HTTP_STATUS_LINE_REGEX: RegExp = /^(.+)\/(\d+(?:\.\d+)?) (\d+) (.+)$/;
 	
@@ -22,8 +21,6 @@ export class OutgoingHTTPRequest extends MutableHTTPMessage implements HTTPReque
 		
 		return new Promise<IncomingHTTPResponse>((resolve: (value: IncomingHTTPResponse) => void,
 									reject: (reason: Error) => void): void => {
-			
-			let result: IncomingHTTPResponse = new IncomingHTTPResponse(this)
 			
 			let method: string = this.getMethod().getName();
 			let headers: { [field: string]: string[] } = {};
@@ -66,7 +63,19 @@ export class OutgoingHTTPRequest extends MutableHTTPMessage implements HTTPReque
 					
 				});
 				
-				socket.on("end", (): void => resolve(rawResponse));
+				socket.on("end", (): void => {
+					
+					rawResponse;
+					
+					// TODO [8/9/2021 @ 4:34 PM] This is not finished!
+					resolve(new IncomingHTTPResponse(
+						this,
+						HTTPStatusCode.HTTP_OK,
+						this.method,
+						this.url
+					));
+					
+				});
 				
 			});
 			
@@ -84,14 +93,6 @@ export class OutgoingHTTPRequest extends MutableHTTPMessage implements HTTPReque
 			request.end();
 			
 		});
-		
-	}
-	
-	public getMatchingResponse(): HTTPResponse | Promise<HTTPResponse> {
-		
-		// FIX-ME [7/28/21 @ 9:01 PM] This method is unfinished!
-		
-		return undefined as any;
 		
 	}
 	
