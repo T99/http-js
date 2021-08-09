@@ -1,6 +1,5 @@
 import { HTTPMethod, HTTPMethodable } from "../../schema/http-method";
 import { ParseableHTTPHeaders, ImmutableHTTPHeadersManager } from "../../headers/immutable-http-headers-manager";
-import { HTTPMessage } from "../interfaces/http-message";
 
 export abstract class ImmutableHTTPMessage implements HTTPMessage {
 	
@@ -54,12 +53,22 @@ export abstract class ImmutableHTTPMessage implements HTTPMessage {
 		
 	}
 	
+	/**
+	 * Returns the {@link ImmutableHTTPHeadersManager} for this HTTP message.
+	 *
+	 * @returns {ImmutableHTTPHeadersManager} The ImmutableHTTPHeadersManager for this HTTP message.
+	 */
 	public getHeadersManager(): ImmutableHTTPHeadersManager {
 		
 		return this.headersManager;
 		
 	}
 	
+	/**
+	 * Returns the body of this HTTP message.
+	 *
+	 * @returns {any} The body of this HTTP message.
+	 */
 	public getBody(): any {
 		
 		return this.body;
