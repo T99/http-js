@@ -11,19 +11,60 @@ export class ImmutableHTTPMessage {
 	
 	protected body: any;
 	
+	/**
+	 * Initializes a new ImmutableHTTPMessage instance by cloning the provided instance.
+	 *
+	 * @param {ImmutableHTTPMessage} httpMessage The ImmutableHTTPMessage instance to clone.
+	 */
+	public constructor(httpMessage: ImmutableHTTPMessage);
+	
+	/**
+	 * Initializes a new ImmutableHTTPMessage instance
+	 *
+	 * @param {HTTPMethodable} method
+	 * @param {string | URL} url
+	 * @param {ParseableHTTPHeaders | ImmutableHTTPHeadersManager} headersOrHeadersManager
+	 */
 	public constructor(method: HTTPMethodable, url: string | URL,
-						  headersOrHeadersManager?: ParseableHTTPHeaders | ImmutableHTTPHeadersManager) {
+						  headersOrHeadersManager?: ParseableHTTPHeaders | ImmutableHTTPHeadersManager);
+	
+	public constructor(httpMessageOrMethod: ImmutableHTTPMessage | HTTPMethodable, url?: string | URL,
+					   headersOrHeadersManager?: ParseableHTTPHeaders | ImmutableHTTPHeadersManager) {
 		
-		this.method = HTTPMethod.normalizeHTTPMethod(method);
-		
-		if (typeof url === "string") this.url = new URL(url);
-		else this.url = url;
-		
-		if (headersOrHeadersManager instanceof ImmutableHTTPHeadersManager) {
+		// If we are cloning an existing ImmutableHTTPMessage instance...
+		if (httpMessageOrMethod instanceof ImmutableHTTPMessage) {
 			
-			this.headersManager = headersOrHeadersManager;
+			let httpMessage: ImmutableHTTPMessage = httpMessageOrMethod;
 			
-		} else this.headersManager = new ImmutableHTTPHeadersManager(headersOrHeadersManager);
+			// Because HTTPMethod instances are immutable, we can copy this by reference.
+			this.method = httpMessage.method;
+			
+			// Clone the source URL by using the 'href' property on the object.
+			this.url = new URL(httpMessage.url.href);
+			
+			// The ImmutableHTTPHeadersManager has its own built-in way of cloning instances.
+			this.headersManager = new ImmutableHTTPHeadersManager(httpMessage.headersManager);
+			
+		// If we are building a custom ImmutableHTTPMessage instance...
+		} else {
+			
+			let method: HTTPMethodable = httpMessageOrMethod;
+			
+			this.method = HTTPMethod.normalizeHTTPMethod(method);
+			
+			if (typeof url === "string") this.url = new URL(url);
+			else this.url = url as URL;
+			
+			if (headersOrHeadersManager instanceof ImmutableHTTPHeadersManager) {
+				
+				this.headersManager = headersOrHeadersManager;
+				
+			} else this.headersManager = new ImmutableHTTPHeadersManager(headersOrHeadersManager);
+			
+		}
+		
+		// If this is the final constructor call, freeze this object, protecting us from any possible mutation.
+		if (Object.getPrototypeOf(this) === ImmutableHTTPMessage) Object.freeze(this);
 		
 	}
 	
