@@ -1,7 +1,10 @@
 import { HTTPMethod, HTTPMethodable } from "../../schema/http-method";
 import { ParseableHTTPHeaders, ImmutableHTTPHeadersManager } from "../../headers/immutable-http-headers-manager";
+import { MutableHTTPMessage } from "./mutable-http-message";
 
 export class ImmutableHTTPMessage {
+	
+	// TODO [8/9/2021 @ 3:55 PM] Need to add HTTP version (major + minor).
 	
 	protected method: HTTPMethod;
 	
@@ -113,6 +116,12 @@ export class ImmutableHTTPMessage {
 	public getBody(): any {
 		
 		return this.body;
+		
+	}
+	
+	public thaw(): MutableHTTPMessage {
+		
+		return new MutableHTTPMessage(this);
 		
 	}
 	
