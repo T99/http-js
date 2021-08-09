@@ -16,6 +16,8 @@
  * }
  * </pre>
  */
+import { MutableHTTPHeadersManager } from "./mutable-http-headers-manager";
+
 export type HTTPHeaders = {
 	
 	/**
@@ -176,61 +178,94 @@ export class ImmutableHTTPHeadersManager {
 	protected headerFieldTransformer: FieldTransformer;
 	
 	/**
+	 * Initializes an empty ImmutableHTTPHeadersManager instance.
+	 */
+	public constructor();
+	
+	/**
+	 * Initializes a new ImmutableHTTPHeadersManager instance by cloning the provided instance.
+	 *
+	 * @param {ImmutableHTTPHeadersManager} headersManager The ImmutableHTTPHeadersManager instance to clone.
+	 */
+	public constructor(headersManager: ImmutableHTTPHeadersManager);
+	
+	/**
 	 * Initializes a new ImmutableHTTPHeadersManager instance with the provided HTTP headers.
 	 *
 	 * @param {HTTPHeaders} headers The HTTP headers with which to initialize this ImmutableHTTPHeadersManager instance.
 	 * @param {FieldTransformer} headerFieldTransformer
 	 */
-	public constructor(headers: ParseableHTTPHeaders = {}, headerFieldTransformer?: FieldTransformer) {
+	public constructor(headers?: ParseableHTTPHeaders, headerFieldTransformer?: FieldTransformer);
+	
+	public constructor(headersManagerOrHeaders: ParseableHTTPHeaders | ImmutableHTTPHeadersManager = {},
+					   headerFieldTransformer?: FieldTransformer) {
 		
-		this.headers = {};
-		this.headerFieldTransformer = headerFieldTransformer ?? ((field: string): string => field);
+		// If we are cloning an existing ImmutableHTTPHeadersManager instance...
+		if (headersManagerOrHeaders instanceof ImmutableHTTPHeadersManager) {
+			
+			let headersManager: ImmutableHTTPHeadersManager = headersManagerOrHeaders;
+			
+			this.headers = JSON.parse(JSON.stringify(headersManager.headers));
+			this.headerFieldTransformer = headersManager.headerFieldTransformer;
+			
+		// If we are building a ImmutableHTTPHeadersManager instance from structured data...
+		} else {
+			
+			let headers: ParseableHTTPHeaders = headersManagerOrHeaders as ParseableHTTPHeaders;
+			
+			this.headers = {};
+			this.headerFieldTransformer = headerFieldTransformer ?? ((field: string): string => field);
+			
+			for (let field of Object.keys(headers)) {
+				
+				let standardizedField: string = ImmutableHTTPHeadersManager.getStandardizedHeaderField(field);
+				
+				if (typeof headers[field] === "string") {
+					
+					this.headers[standardizedField] = {
+						
+						originalFields: [field],
+						values: [headers[field] as string]
+						
+					};
+					
+				} else if (Array.isArray(headers[field])) {
+					
+					this.headers[standardizedField] = {
+						
+						originalFields: (headers[field] as string[]).map((): string => field),
+						values: headers[field] as string[]
+						
+					};
+					
+				} else if ((headers[field] as any)?.values !== undefined) {
+					
+					let inputOriginalFields: any = (headers[field] as any)?.originalFields;
+					let inputValues: any = (headers[field] as any)?.values;
+					
+					let value: HTTPHeaders[keyof HTTPHeaders] = {
+						originalFields: undefined as any,
+						values: undefined as any
+					};
+					
+					if (typeof inputValues === "string") value.values = [inputValues];
+					else if (Array.isArray(inputValues)) value.values = inputValues;
+					else continue; // The object was improperly formatted, so ignore it.
+					
+					if (typeof inputOriginalFields === "string") value.originalFields = [inputOriginalFields];
+					else if (Array.isArray(inputOriginalFields)) value.originalFields = inputOriginalFields;
+					else continue; // The object was improperly formatted, so ignore it.
+					
+					this.headers[standardizedField] = value;
+					
+				} // Otherwise, ignore it.
+				
+			}
 		
-		for (let field of Object.keys(headers)) {
-			
-			let standardizedField: string = ImmutableHTTPHeadersManager.getStandardizedHeaderField(field);
-			
-			if (typeof headers[field] === "string") {
-				
-				this.headers[standardizedField] = {
-					
-					originalFields: [field],
-					values: [headers[field] as string]
-					
-				};
-				
-			} else if (Array.isArray(headers[field])) {
-				
-				this.headers[standardizedField] = {
-					
-					originalFields: (headers[field] as string[]).map((): string => field),
-					values: headers[field] as string[]
-					
-				};
-				
-			} else if ((headers[field] as any)?.values !== undefined) {
-				
-				let inputOriginalFields: any = (headers[field] as any)?.originalFields;
-				let inputValues: any = (headers[field] as any)?.values;
-				
-				let value: HTTPHeaders[keyof HTTPHeaders] = {
-					originalFields: undefined as any,
-					values: undefined as any
-				};
-				
-				if (typeof inputValues === "string") value.values = [inputValues];
-				else if (Array.isArray(inputValues)) value.values = inputValues;
-				else continue; // The object was improperly formatted, so ignore it.
-				
-				if (typeof inputOriginalFields === "string") value.originalFields = [inputOriginalFields];
-				else if (Array.isArray(inputOriginalFields)) value.originalFields = inputOriginalFields;
-				else continue; // The object was improperly formatted, so ignore it.
-				
-				this.headers[standardizedField] = value;
-				
-			} // Otherwise, ignore it.
-			
 		}
+		
+		// If this is the final constructor call, freeze this object, protecting us from any possible mutation.
+		if (Object.getPrototypeOf(this) === ImmutableHTTPHeadersManager) Object.freeze(this);
 		
 	}
 	
