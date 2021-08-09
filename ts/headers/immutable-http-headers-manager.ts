@@ -276,7 +276,7 @@ export class ImmutableHTTPHeadersManager {
 	}
 	
 	/**
-	 * Returns an object containing all of the HTTP headers and their values for this collection of headers.
+	 * Returns an object containing all of the HTTP headers and their values for this collection of headers.<br />
 	 *
 	 * Note that this object is a clone of the original, and therefore cannot be used to modify the internal state of
 	 * this ImmutableHTTPHeadersManager instance.
@@ -292,7 +292,7 @@ export class ImmutableHTTPHeadersManager {
 	}
 	
 	/**
-	 * Returns an array of the HTTP header fields present on this collection of headers.
+	 * Returns an array of the HTTP header fields present on this collection of headers.<br />
 	 *
 	 * Note that this function does not return the fields associated with the returned fields, but rather simply an
 	 * array containing the field names.
@@ -345,12 +345,15 @@ export class ImmutableHTTPHeadersManager {
 	}
 	
 	/**
-	 * Returns the last value present for the specified header field, or undefined if the specified field was not found.
+	 * Returns the last value present for the specified header field, or undefined if the specified field was not
+	 * found.<br />
 	 *
 	 * For example, in the situation in which the 'Accept' header is set multiple times in the following order:
+	 * <pre>
 	 * 	- Accept: application/json
 	 * 	- Accept: text/xml
 	 * 	- Accept: text/csv
+	 * </pre>
 	 * This function would return 'text/csv'.
 	 *
 	 * @param {HTTPHeaderField} field The HTTP header field for which to retrieve the authoritative value.
@@ -372,9 +375,10 @@ export class ImmutableHTTPHeadersManager {
 	
 	/**
 	 * Returns an array of desirable formats, as indicated by the 'Accept' header, ordered from most desirable to least
-	 * desirable.
+	 * desirable.<br />
 	 *
-	 * This is determined based on the 'q' parameter, which can optionally be specified for each 'Accept' header value.
+	 * This is determined based on the 'q' parameter, which can optionally be specified for each 'Accept' header
+	 * value.<br />
 	 * Each value (in which the aforementioned 'q' parameter is specified) takes the form:
 	 * <pre>
 	 *     mimePrimaryType/mimeSecondaryType;q=relativeQualityFactor
@@ -486,12 +490,12 @@ export class ImmutableHTTPHeadersManager {
 	
 	/**
 	 * Returns an array of preferred, supported formats, as decided by a combination of the 'Accept' header on this
-	 * object, as well as the array of supported formats provided by the caller.
+	 * object, as well as the array of supported formats provided by the caller.<br />
 	 *
 	 * In other words, the formats returned by this function represent the intersection of the set of formats that are
 	 * acceptable based on the 'Accept' header on this object, as well as the set of supported formats specified by the
-	 * caller.
-	 *
+	 * caller.<br />
+	 * 
 	 * This function's return value is stable to the input array - in other words, if a given format is specified before
 	 * another format in the input array, and both formats are acceptable, matches to the earlier format will show up
 	 * before matches to the later format in the output array.
