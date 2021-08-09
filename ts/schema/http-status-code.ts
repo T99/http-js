@@ -305,7 +305,7 @@ export class HTTPStatusCode {
 	 * @param {string} title The 'title' or short description of this particular HTTP status code.
 	 * @param {string} explanation The 'explanation' or long description of this particular HTTP status code.
 	 */
-	protected constructor(statusCode: number, title: string, explanation: string) {
+	public constructor(statusCode: number, title: string, explanation: string) {
 		
 		this.statusCode = statusCode;
 		this.title = title;
