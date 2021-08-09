@@ -611,4 +611,26 @@ export class ImmutableHTTPHeadersManager {
 		return result;
 		
 	}
+	
+	/**
+	 * Returns a 'thawed' (mutable) version of this instance.
+	 *
+	 * This
+	 *
+	 * @returns {MutableHTTPHeadersManager}
+	 */
+	public thaw(): MutableHTTPHeadersManager {
+		
+		let thawedObject: MutableHTTPHeadersManager = new MutableHTTPHeadersManager();
+		
+		// Deep-clone the 'headers' object by serializing, then de-serializing it.
+		thawedObject.headers = JSON.parse(JSON.stringify(this.headers));
+		
+		// We can copy the function reference plainly.
+		thawedObject.headerFieldTransformer = this.headerFieldTransformer;
+		
+		return thawedObject;
+		
+	}
+	
 }
