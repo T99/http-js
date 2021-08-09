@@ -3,11 +3,11 @@ import { ParseableHTTPHeaders } from "../../headers/immutable-http-headers-manag
 import { MutableHTTPHeadersManager } from "../../headers/mutable-http-headers-manager";
 import { HTTPMethod, HTTPMethodable } from "../../schema/http-method";
 
-export abstract class MutableHTTPMessage extends ImmutableHTTPMessage {
+export class MutableHTTPMessage extends ImmutableHTTPMessage {
 	
 	protected headersManager!: MutableHTTPHeadersManager;
 	
-	protected constructor(method: HTTPMethodable, url: string | URL,
+	public constructor(method: HTTPMethodable, url: string | URL,
 						  headersOrHeadersManager?: ParseableHTTPHeaders | MutableHTTPHeadersManager) {
 		
 		// If the value being passed for the headers of this message is not a pre-baked MutableHTTPHeadersManager...

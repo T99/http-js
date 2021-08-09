@@ -1,7 +1,7 @@
 import { HTTPMethod, HTTPMethodable } from "../../schema/http-method";
 import { ParseableHTTPHeaders, ImmutableHTTPHeadersManager } from "../../headers/immutable-http-headers-manager";
 
-export abstract class ImmutableHTTPMessage implements HTTPMessage {
+export class ImmutableHTTPMessage {
 	
 	protected method: HTTPMethod;
 	
@@ -11,7 +11,7 @@ export abstract class ImmutableHTTPMessage implements HTTPMessage {
 	
 	protected body: any;
 	
-	protected constructor(method: HTTPMethodable, url: string | URL,
+	public constructor(method: HTTPMethodable, url: string | URL,
 						  headersOrHeadersManager?: ParseableHTTPHeaders | ImmutableHTTPHeadersManager) {
 		
 		this.method = HTTPMethod.normalizeHTTPMethod(method);
