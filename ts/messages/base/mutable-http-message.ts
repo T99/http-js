@@ -7,19 +7,35 @@ export class MutableHTTPMessage extends ImmutableHTTPMessage {
 	
 	protected headersManager!: MutableHTTPHeadersManager;
 	
-	public constructor(method: HTTPMethodable, url: string | URL,
+	public constructor(httpMessage: ImmutableHTTPMessage);
+	
+	public constructor(method: HTTPMethodable,
+					   url: string | URL,
+					   headersOrHeadersManager?: ParseableHTTPHeaders | MutableHTTPHeadersManager)
+	
+	public constructor(httpMessageOrMethod: ImmutableHTTPMessage | HTTPMethodable, url?: string | URL,
 						  headersOrHeadersManager?: ParseableHTTPHeaders | MutableHTTPHeadersManager) {
 		
-		// If the value being passed for the headers of this message is not a pre-baked MutableHTTPHeadersManager...
-		if (!(headersOrHeadersManager instanceof MutableHTTPHeadersManager)) {
+		if (httpMessageOrMethod instanceof ImmutableHTTPMessage) {
 			
-			// Form it into one so that the parent class doesn't instantiate headersManager as immutable.
-			if (headersOrHeadersManager === undefined) headersOrHeadersManager = new MutableHTTPHeadersManager();
-			else headersOrHeadersManager = new MutableHTTPHeadersManager(headersOrHeadersManager);
+			// TODO [8/9/2021 @ 4:33 PM] Clone the input object!
+			
+		} else {
+			
+			let method: HTTPMethodable = httpMessageOrMethod;
+			
+			// If the value being passed for the headers of this message is not a pre-baked MutableHTTPHeadersManager...
+			if (!(headersOrHeadersManager instanceof MutableHTTPHeadersManager)) {
+				
+				// Form it into one so that the parent class doesn't instantiate headersManager as immutable.
+				if (headersOrHeadersManager === undefined) headersOrHeadersManager = new MutableHTTPHeadersManager();
+				else headersOrHeadersManager = new MutableHTTPHeadersManager(headersOrHeadersManager);
+				
+			}
+			
+			super(method, url as string | URL, headersOrHeadersManager);
 			
 		}
-		
-		super(method, url, headersOrHeadersManager);
 		
 	}
 	
@@ -39,6 +55,23 @@ export class MutableHTTPMessage extends ImmutableHTTPMessage {
 	public getHeadersManager(): MutableHTTPHeadersManager {
 		
 		return this.headersManager;
+		
+	}
+	
+	public setBody(body: any): void {
+		
+		this.body = body;
+		
+	}
+	
+	/**
+	 * Returns an immutable version of this MutableHTTPMessage.
+	 * 
+	 * @returns {ImmutableHTTPMessage} An immutable version of this MutableHTTPMessage.
+	 */
+	public freeze(): ImmutableHTTPMessage {
+		
+		return new ImmutableHTTPMessage(this);
 		
 	}
 	
