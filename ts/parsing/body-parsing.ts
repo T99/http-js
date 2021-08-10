@@ -1,7 +1,7 @@
 export type BodyParserResult = {
 	type: "undefined" | "object" | "boolean" | "number" | "bigint" | "string" | "symbol" | "function",
 	data: any
-}
+};
 
 /**
  * The type of function that is capable of taking in a string (typically that which has been received raw from the body
