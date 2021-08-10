@@ -1,7 +1,7 @@
 /*
  *	Created by Trevor Sears <trevorsears.main@gmail.com>.
  *	8:48 PM -- June 16th, 2019.
- *	Project: http-request-js
+ *	Project: http-js
  */
 
 const gulp = require("gulp");

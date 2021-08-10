@@ -1,7 +1,7 @@
 /*
  *	Created by Trevor Sears <trevorsears.main@gmail.com>.
  *	10:53 PM -- June 11th, 2019.
- *	Project: http-request-js
+ *	Project: http-js
  */
 
 /**
