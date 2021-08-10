@@ -5,12 +5,14 @@ export class MutableHTTPHeadersManager extends ImmutableHTTPHeadersManager {
 	
 	/**
 	 * Returns an object containing all of the HTTP headers and their values for this collection of headers.
-	 * 
+	 *
 	 * @returns {HTTPHeaders} An object containing all of the HTTP headers and their values for this collection of
 	 * headers.
 	 */
 	public getHeaders(): HTTPHeaders {
+		
 		return this.headers;
+		
 	}
 	
 	/**
@@ -51,7 +53,7 @@ export class MutableHTTPHeadersManager extends ImmutableHTTPHeadersManager {
 	public removeHeader(field: HTTPHeaderField, ...values: string[]): string[];
 	public removeHeader(field: HTTPHeaderField, matcher: (value: string) => boolean): string[];
 	public removeHeader(field: HTTPHeaderField,
-						firstValueOrMatcher: string | ((value: string) => boolean) | undefined = undefined,
+						firstValueOrMatcher?: string | ((value: string) => boolean),
 						...rest: string[]): string[] | undefined {
 		
 		// Transform the field name to lower case for lookup purposes.
