@@ -1,12 +1,12 @@
-import { HTTPHeaders, ImmutableHTTPHeadersManager } from "../../headers/immutable-http-headers-manager";
+import { HTTPHeaders, HTTPHeadersManager } from "../../headers/http-headers-manager";
 
-let headersManager: ImmutableHTTPHeadersManager;
+let headersManager: HTTPHeadersManager;
 
 describe("Initialization", (): void => {
 	
 	test("Initialization for empty headers manager with no-args constructor.", (): void => {
 		
-		let testInstance: ImmutableHTTPHeadersManager = new ImmutableHTTPHeadersManager();
+		let testInstance: HTTPHeadersManager = new HTTPHeadersManager();
 		
 		expect(testInstance).not.toBeUndefined();
 		
@@ -16,9 +16,9 @@ describe("Initialization", (): void => {
 		
 		beforeAll((): void => {
 			
-			headersManager = new ImmutableHTTPHeadersManager({
+			headersManager = new HTTPHeadersManager({
 				"Content-Type": "text/csv, application/json;q=0.7 text/xml;q=0.8",
-				"aCCEPT":
+				"aCCEPT": "text/xml, text/csv;q=0.7 application/json;q=0.8"
 			});
 			
 		});
@@ -27,7 +27,7 @@ describe("Initialization", (): void => {
 	
 	test("", (): void => {
 		
-		headersManager = new ImmutableHTTPHeadersManager();
+		headersManager = new HTTPHeadersManager();
 		
 	});
 	
@@ -37,7 +37,7 @@ describe("Empty headers object", (): void => {
 	
 	test("Initialization for empty headers manager with no-args constructor.", (): void => {
 		
-		let testInstance: ImmutableHTTPHeadersManager = new ImmutableHTTPHeadersManager();
+		let testInstance: HTTPHeadersManager = new HTTPHeadersManager();
 		
 		expect(testInstance).not.toBeUndefined();
 		
@@ -45,7 +45,7 @@ describe("Empty headers object", (): void => {
 	
 	beforeEach((): void => {
 	
-		headersManager = new ImmutableHTTPHeadersManager();
+		headersManager = new HTTPHeadersManager();
 	
 	});
 	
@@ -102,7 +102,7 @@ describe("Standard HTTP headers object", (): void => {
 	
 	beforeEach((): void => {
 		
-		headersManager = new ImmutableHTTPHeadersManager();
+		headersManager = new HTTPHeadersManager();
 		
 	});
 	

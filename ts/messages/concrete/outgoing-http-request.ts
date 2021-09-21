@@ -1,26 +1,25 @@
 import net from "net";
 import http from "http";
 import https from "https";
-import { HTTPMethodable } from "../../schema/http-method";
 import { HTTPRequestError } from "../../error/http-request-error";
 import { IncomingHTTPResponse } from "./incoming-http-response";
-import { MutableHTTPRequest } from "../base/mutable-http-request";
 import { HTTPStatusCode } from "../../schema/http-status-code";
+import { HTTPRequest, HTTPRequestConfig } from "../http-request";
 
-export class OutgoingHTTPRequest extends MutableHTTPRequest {
+export class OutgoingHTTPRequest extends HTTPRequest {
 	
 	protected static readonly HTTP_STATUS_LINE_REGEX: RegExp = /^(.+)\/(\d+(?:\.\d+)?) (\d+) (.+)$/;
 	
-	public constructor(method: HTTPMethodable, url: string | URL) {
+	public constructor(config: HTTPRequestConfig) {
 		
-		super(method, url);
+		super(config);
 		
 	}
 	
 	public execute(): Promise<IncomingHTTPResponse> {
 		
 		return new Promise<IncomingHTTPResponse>((resolve: (value: IncomingHTTPResponse) => void,
-									reject: (reason: Error) => void): void => {
+												  reject: (reason: Error) => void): void => {
 			
 			let method: string = this.getMethod().getName();
 			let headers: { [field: string]: string[] } = {};
@@ -65,15 +64,17 @@ export class OutgoingHTTPRequest extends MutableHTTPRequest {
 				
 				socket.on("end", (): void => {
 					
+					// TODO [8/9/2021 @ 4:34 PM] This is not finished!
+					
 					rawResponse;
 					
-					// TODO [8/9/2021 @ 4:34 PM] This is not finished!
-					resolve(new IncomingHTTPResponse(
-						this,
-						HTTPStatusCode.HTTP_OK,
-						this.method,
-						this.url
-					));
+					resolve(new IncomingHTTPResponse({
+						statusCode: HTTPStatusCode.HTTP_OK,
+						method: this.method,
+						url: this.url,
+						headers: this.headersManager,
+						version: this.version
+					}));
 					
 				});
 				

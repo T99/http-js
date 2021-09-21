@@ -1,7 +1,11 @@
+
 /**
  * An enumeration of valid HTTP status codes.
  */
 export class HTTPStatusCode {
+	
+	// DOC-ME [9/21/2021 @ 10:10 AM] Documentation is required!
+	protected static registry: Map<number, HTTPStatusCode> = new Map();
 	
 	/**
 	 * The server has accepted that part of the data which has already been received from the client, and is instructing
@@ -311,9 +315,22 @@ export class HTTPStatusCode {
 		this.title = title;
 		this.explanation = explanation;
 		
-		// We want to strictly prevent mutation of HTTPStatusCode references so that their semantic value CANNOT and
-		// WILL NOT be changed by users down-the-line. See HTTPMethod#constructor for more info.
-		Object.freeze(this);
+		HTTPStatusCode.registry.set(statusCode, this);
+		
+	}
+	
+	// DOC-ME [9/21/2021 @ 10:10 AM] Documentation is required!
+	public static hasStatusCode(statusCode: number): boolean {
+		
+		return HTTPStatusCode.registry.has(statusCode);
+		
+	}
+	
+	// DOC-ME [9/21/2021 @ 10:10 AM] Documentation is required!
+	public static fromStatusCode(statusCode: number): HTTPStatusCode {
+		
+		if (HTTPStatusCode.hasStatusCode(statusCode)) return HTTPStatusCode.registry.get(statusCode) as HTTPStatusCode;
+		else throw new Error(`Failed to find an HTTPStatusCode with the provided numeric status code: ${statusCode}`);
 		
 	}
 	
