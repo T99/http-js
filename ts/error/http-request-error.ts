@@ -1,4 +1,4 @@
-import { HTTPRequest } from "../messages/http-request";
+import { HTTPRequest } from "../messages/request/http-request";
 
 export class HTTPRequestError extends Error {
 	

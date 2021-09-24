@@ -1,8 +1,8 @@
-import type { ImmutableHTTPMessage } from "./interfaces/immutable-http-message";
-import type { MutableHTTPMessage } from "./interfaces/mutable-http-message";
-import { HTTPMethod } from "../schema/http-method";
-import { HTTPHeadersManager, ParseableHTTPHeaders } from "../headers/http-headers-manager";
-import { HTTPVersionFormat, HTTPVersionObject, normalizeHTTPVersion } from "../parsing/http-version-parsing";
+import type { ImmutableHTTPMessage } from "./immutable-http-message";
+import type { MutableHTTPMessage } from "./mutable-http-message";
+import { HTTPMethod } from "../../schema/http-method";
+import { HTTPHeadersManager, ParseableHTTPHeaders } from "../../headers/http-headers-manager";
+import { HTTPVersionFormat, HTTPVersionObject, normalizeHTTPVersion } from "../../parsing/http-version-parsing";
 
 export type HTTPMessageConfig = {
 	

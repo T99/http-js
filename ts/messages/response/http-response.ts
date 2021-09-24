@@ -1,8 +1,8 @@
-import { HTTPMessage, HTTPMessageConfig } from "./http-message";
-import { ImmutableHTTPResponse } from "./interfaces/immutable-http-response";
-import { MutableHTTPResponse } from "./interfaces/mutable-http-response";
-import { HTTPStatusCode } from "../schema/http-status-code";
-import { HTTPRequest } from "./http-request";
+import { HTTPMessage, HTTPMessageConfig } from "../message/http-message";
+import { ImmutableHTTPResponse } from "./immutable-http-response";
+import { MutableHTTPResponse } from "./mutable-http-response";
+import { HTTPStatusCode } from "../../schema/http-status-code";
+import { HTTPRequest } from "../request/http-request";
 
 export type HTTPResponseConfig = HTTPMessageConfig & {
 	

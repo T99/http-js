@@ -1,6 +1,6 @@
-import { HTTPMessage, HTTPMessageConfig } from "./http-message";
-import { ImmutableHTTPRequest } from "./interfaces/immutable-http-request";
-import { MutableHTTPRequest } from "./interfaces/mutable-http-request";
+import { HTTPMessage, HTTPMessageConfig } from "../message/http-message";
+import { ImmutableHTTPRequest } from "./immutable-http-request";
+import { MutableHTTPRequest } from "./mutable-http-request";
 
 export type HTTPRequestConfig = HTTPMessageConfig & {};
 

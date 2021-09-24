@@ -1,4 +1,4 @@
-import { HTTPResponse, HTTPResponseConfig } from "../http-response";
+import { HTTPResponse, HTTPResponseConfig } from "./http-response";
 
 /**
  * Represents an HTTP response that was received in response to an enacted {@link OutgoingHTTPRequest} instance.

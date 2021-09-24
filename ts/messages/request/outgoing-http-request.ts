@@ -2,9 +2,9 @@ import net from "net";
 import http from "http";
 import https from "https";
 import { HTTPRequestError } from "../../error/http-request-error";
-import { IncomingHTTPResponse } from "./incoming-http-response";
+import { IncomingHTTPResponse } from "../response/incoming-http-response";
 import { HTTPStatusCode } from "../../schema/http-status-code";
-import { HTTPRequest, HTTPRequestConfig } from "../http-request";
+import { HTTPRequest, HTTPRequestConfig } from "./http-request";
 
 export class OutgoingHTTPRequest extends HTTPRequest {
 	
