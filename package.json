@@ -1,7 +1,7 @@
 {
 	"name": "@t99/http",
 	"version": "v0.1.0",
-	"description": "My own personal simple HTTP request library for NodeJS - written in TypeScript.",
+	"description": "My own personal simple HTTP library for NodeJS - written in TypeScript.",
 	"main": "js/main",
 	"types": ".d.ts/main",
 	"scripts": {
@@ -13,7 +13,7 @@
 		"url": "git+https://github.com/T99/http-js.git"
 	},
 	"keywords": [],
-	"author": "Trevor Sears <trevorsears.main@gmail.com> (http://trevorsears.io/)",
+	"author": "Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/)",
 	"license": "GPL-3.0-or-later",
 	"bugs": {
 		"url": "https://github.com/T99/http-js/issues"
