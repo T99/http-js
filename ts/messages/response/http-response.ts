@@ -12,8 +12,10 @@ export type HTTPResponseConfig = HTTPMessageConfig & {
 
 export class HTTPResponse extends HTTPMessage implements ImmutableHTTPResponse, MutableHTTPResponse {
 	
+	// DOC-ME [9/25/21 @ 1:59 PM] Documentation required!
 	protected statusCode: HTTPStatusCode;
 	
+	// DOC-ME [9/25/21 @ 1:59 PM] Documentation required!
 	public constructor(config: HTTPResponseConfig) {
 		
 		super(config);

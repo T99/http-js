@@ -1,5 +1,6 @@
-import type { StringMIMEType } from "../schema/mime-types";
 import type { ImmutableHTTPHeadersManager } from "./immutable-http-headers-manager";
+import type { StringMIMEType } from "../schema/mime-types";
+import type { HTTPHeaderField } from "../schema/http-header-fields";
 
 // DOC-ME [9/20/2021 @ 4:56 PM] Documentation is required!
 export interface MutableHTTPHeadersManager extends ImmutableHTTPHeadersManager {

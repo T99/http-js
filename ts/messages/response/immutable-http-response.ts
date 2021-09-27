@@ -5,10 +5,10 @@ import { ImmutableHTTPMessage } from "../message/immutable-http-message";
 // DOC-ME [9/20/2021 @ 4:59 PM] Documentation is required!
 export interface ImmutableHTTPResponse extends ImmutableHTTPMessage {
 	
-	// DOC-ME [9/21/2021 @ 9:47 AM] Documentation is required!
+	// DOC-ME [9/25/21 @ 1:59 PM] Documentation required!
 	getMatchingRequest(): HTTPRequest;
 	
-	// DOC-ME [9/20/2021 @ 5:00 PM] Documentation is required!
+	// DOC-ME [9/25/21 @ 1:59 PM] Documentation required!
 	getStatusCode(): HTTPStatusCode;
 	
 }

@@ -1,6 +1,7 @@
 import { StringMIMEType } from "../schema/mime-types";
 import { AcceptHeaderValue, FieldTransformer, ImmutableHTTPHeadersManager } from "./immutable-http-headers-manager";
 import { MutableHTTPHeadersManager } from "./mutable-http-headers-manager";
+import { HTTPHeaderField } from "../schema/http-header-fields";
 
 /**
  * An object whose fields are each valid HTTP header fields, each field having the values assigned to the HTTP header
