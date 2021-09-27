@@ -1,6 +1,6 @@
-type HTTPHeaderField = CommonHTTPHeaderFields | string;
+export type HTTPHeaderField = CommonHTTPHeaderFields | string;
 
-type CommonHTTPHeaderFields =
+export type CommonHTTPHeaderFields =
 	| "Accept"
 	| "Authorization"
 	| "Age"

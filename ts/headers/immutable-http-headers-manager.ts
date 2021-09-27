@@ -1,4 +1,5 @@
 import { HTTPHeaders } from "./http-headers-manager";
+import { HTTPHeaderField } from "../schema/http-header-fields";
 
 // DOC-ME [9/20/2021 @ 4:48 PM] Documentation is required!
 export type FieldTransformer = (field: string) => string;
