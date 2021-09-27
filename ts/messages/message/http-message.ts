@@ -4,6 +4,7 @@ import { HTTPMethod } from "../../schema/http-method";
 import { HTTPHeadersManager, ParseableHTTPHeaders } from "../../headers/http-headers-manager";
 import { HTTPVersionFormat, HTTPVersionObject, normalizeHTTPVersion } from "../../parsing/http-version-parsing";
 
+// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 export type HTTPMessageConfig = {
 	
 	version?: string | number | HTTPVersionObject,
@@ -14,25 +15,33 @@ export type HTTPMessageConfig = {
 	
 	headers?: ParseableHTTPHeaders | HTTPHeadersManager
 	
-}
+};
 
+// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 export class HTTPMessage implements ImmutableHTTPMessage, MutableHTTPMessage {
 	
+	// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 	public static readonly DEFAULT_HTTP_VERSION: HTTPVersionObject = {
 		major: "1",
 		minor: "1"
 	};
 	
+	// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 	protected version: HTTPVersionObject;
 	
+	// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 	protected method: HTTPMethod;
 	
+	// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 	protected url: URL;
 	
+	// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 	protected headersManager: HTTPHeadersManager;
 	
+	// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 	protected body: any;
 	
+	// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 	public constructor(config: HTTPMessageConfig) {
 		
 		this.version = normalizeHTTPVersion(config.version);
@@ -46,43 +55,8 @@ export class HTTPMessage implements ImmutableHTTPMessage, MutableHTTPMessage {
 		
 	}
 	
-	/**
-	 * Returns the HTTP version of this HTTP message in the requested format.
-	 *
-	 * "major": Returns 'x' for versions of the form 'x.y'.<br />
-	 * "minor": Returns 'y' for versions of the form 'x.y'.<br />
-	 * "full": Returns 'x.y' for versions of the form 'x.y'.<br />
-	 * "object": Returns an HTTPVersionObject object containing 'major' and 'minor' properties.
-	 *
-	 * @param {"major" | "minor" | "full"} format The format in which to return the HTTP version of this HTTP message.
-	 * @returns {string} The HTTP version of this HTTP message in the requested format.
-	 */
-	public getHTTPVersion(format: "major" | "minor" | "full"): string;
-	
-	/**
-	 * Returns the HTTP version of this HTTP message in the requested format.
-	 *
-	 * "major": Returns 'x' for versions of the form 'x.y'.<br />
-	 * "minor": Returns 'y' for versions of the form 'x.y'.<br />
-	 * "full": Returns 'x.y' for versions of the form 'x.y'.<br />
-	 * "object": Returns an HTTPVersionObject object containing 'major' and 'minor' properties.
-	 *
-	 * @param {"object"} format The format in which to return the HTTP version of this HTTP message.
-	 * @returns {HTTPVersionObject} The HTTP version of this HTTP message in the requested format.
-	 */
 	public getHTTPVersion(format?: "object"): HTTPVersionObject;
-	
-	/**
-	 * Returns the HTTP version of this HTTP message in the requested format.
-	 *
-	 * "major": Returns 'x' for versions of the form 'x.y'.<br />
-	 * "minor": Returns 'y' for versions of the form 'x.y'.<br />
-	 * "full": Returns 'x.y' for versions of the form 'x.y'.<br />
-	 * "object": Returns an HTTPVersionObject object containing 'major' and 'minor' properties.
-	 *
-	 * @param {HTTPVersionFormat} format The format in which to return the HTTP version of this HTTP message.
-	 * @returns {number | HTTPVersionObject} The HTTP version of this HTTP message in the requested format.
-	 */
+	public getHTTPVersion(format: "major" | "minor" | "full"): string;
 	public getHTTPVersion(format?: HTTPVersionFormat): string | HTTPVersionObject {
 		
 		if (format === "major") return this.version.major;
