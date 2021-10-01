@@ -50,4 +50,10 @@ export class HTTPMethod {
 		
 	}
 	
+	public toString(): string {
+		
+		return this.methodName;
+		
+	}
+	
 }
