@@ -73,6 +73,12 @@ export class HTTPMessage implements ImmutableHTTPMessage, MutableHTTPMessage {
 		
 	}
 	
+	public setHTTPVersion(version: string | number | HTTPVersionObject): void {
+		
+		this.version = normalizeHTTPVersion(version);
+		
+	}
+	
 	public getMethod(): HTTPMethod {
 		
 		return this.method;
