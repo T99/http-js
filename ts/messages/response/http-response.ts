@@ -23,7 +23,8 @@ export class HTTPResponse extends HTTPMessage implements ImmutableHTTPResponse, 
 		
 		super(config);
 		
-		this.setStatusCode(config.statusCode);
+		if (typeof config.statusCode === "number") this.statusCode = HTTPStatusCode.fromStatusCode(config.statusCode);
+		else this.statusCode = config.statusCode;
 		
 	}
 	
