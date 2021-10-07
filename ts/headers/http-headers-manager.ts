@@ -1,7 +1,8 @@
 import { StringMIMEType } from "../schema/mime-types";
-import { AcceptHeaderValue, FieldTransformer, ImmutableHTTPHeadersManager } from "./immutable-http-headers-manager";
+import { FieldTransformer, ImmutableHTTPHeadersManager } from "./immutable-http-headers-manager";
 import { MutableHTTPHeadersManager } from "./mutable-http-headers-manager";
 import { HTTPHeaderField } from "../schema/http-header-fields";
+import { HTTPAcceptHeaderManager } from "./http-accept-header-manager";
 
 /**
  * An object whose fields are each valid HTTP header fields, each field having the values assigned to the HTTP header
@@ -80,44 +81,6 @@ export type ParseableHTTPHeaders = {
 	
 };
 
-/**
- * Matches the various parts of each 'Accept' value:
- *   - Capture Group 0: The entire value, if it is valid.
- *   - Capture Group 1: The primary MIME type (i.e. for 'text/csv' this would be 'text').
- *   - Capture Group 2: The MIME subtype (i.e. for 'text/csv' this would be 'csv').
- *   - Capture Group 3: The relative quality factor of the value, if one is present.
- */
-const ACCEPT_HEADER_VALUE_REGEX: RegExp = /(.+)\/(.*?)(?=;|$)(?:;q=(\d+(?:\.\d+)?$))?/;
-
-// DOC-ME [7/27/2021 @ 3:27 PM] Documentation is required!
-function parseAcceptHeaderValue(rawValue: string): AcceptHeaderValue | undefined {
-	
-	let matches: string[] | null = rawValue.match(ACCEPT_HEADER_VALUE_REGEX);
-	
-	// If we found at least the MIME type parts...
-	if (matches !== null && matches.length >= 3) {
-		
-		let mimeType: string = matches[1] as string;
-		let mimeSubtype: string = matches[2] as string;
-		let relativeQualityFactor: number = 1; // <- Default value, as per spec.
-		
-		// If we found a value for the relative quality factor...
-		if (matches?.length >= 4) {
-			
-			let parsedNumericValue: number = parseFloat(matches[3]);
-			
-			// Make sure that the value wasn't somehow malformed.
-			// This check shouldn't be necessary based on the above Regex, but better safe than erroring.
-			if (!isNaN(parsedNumericValue)) relativeQualityFactor = parsedNumericValue;
-			
-		}
-		
-		return { mimePrimaryType: mimeType, mimeSecondaryType: mimeSubtype, relativeQualityFactor };
-		
-	} else return undefined;
-	
-}
-
 // DOC-ME [9/20/2021 @ 4:48 PM] Documentation is required!
 export class HTTPHeadersManager implements ImmutableHTTPHeadersManager, MutableHTTPHeadersManager {
 	
@@ -158,6 +121,12 @@ export class HTTPHeadersManager implements ImmutableHTTPHeadersManager, MutableH
 	// DOC-ME [9/20/2021 @ 4:48 PM] Documentation is required!
 	protected headerFieldTransformer: FieldTransformer;
 	
+	public readonly Accept: HTTPAcceptHeaderManager;
+	
+	public readonly AcceptEncoding!: HTTPAcceptHeaderManager;
+	
+	public readonly AcceptLanguage!: HTTPAcceptHeaderManager;
+	
 	/**
 	 * Initializes an empty ImmutableHTTPHeadersManager instance.
 	 */
@@ -188,6 +157,7 @@ export class HTTPHeadersManager implements ImmutableHTTPHeadersManager, MutableH
 			
 			this.headers = JSON.parse(JSON.stringify(headersManager.headers));
 			this.headerFieldTransformer = headersManager.headerFieldTransformer;
+			this.Accept = new HTTPAcceptHeaderManager(this);
 			
 		// If we are building a ImmutableHTTPHeadersManager instance from structured data...
 		} else {
@@ -242,6 +212,8 @@ export class HTTPHeadersManager implements ImmutableHTTPHeadersManager, MutableH
 				} // Otherwise, ignore it.
 				
 			}
+			
+			this.Accept = new HTTPAcceptHeaderManager(this);
 			
 		}
 		
@@ -414,170 +386,6 @@ export class HTTPHeadersManager implements ImmutableHTTPHeadersManager, MutableH
 			return headerValues[headerValues.length - 1];
 			
 		} else return undefined;
-		
-	}
-	
-	/**
-	 * Returns an array of desirable formats, as indicated by the 'Accept' header, ordered from most desirable to least
-	 * desirable.<br />
-	 *
-	 * This is determined based on the 'q' parameter, which can optionally be specified for each 'Accept' header
-	 * value.<br />
-	 * Each value (in which the aforementioned 'q' parameter is specified) takes the form:
-	 * <pre>
-	 *     mimePrimaryType/mimeSecondaryType;q=relativeQualityFactor
-	 * </pre>
-	 *
-	 * For example:
-	 * <pre>
-	 *     application/json;q=0.5
-	 * </pre>
-	 *
-	 * Values for which a relative quality factor is not explicitly set default to a value of 1. More explicit MIME
-	 * types are also always preferred over less explicit types. For example:
-	 * <pre>
-	 *     image/webp;q=0.7
-	 * </pre>
-	 *
-	 * Would take precedence over:
-	 * <pre>
-	 *     image/*;q=0.7
-	 * </pre>
-	 *
-	 * @param {boolean} preferAuthoritativeHeader Whether or not to exclusively use the authoritative 'Accept' header
-	 * to determine the preferred format. If not, all 'Accept' headers will be aggregated in order to find the preferred
-	 * format.
-	 * @param {boolean} collapseToStrings An optional parameter that determines the format of the return value. Set to
-	 * true if the return value should consist of strings, or false if the return value should consist of an array of
-	 * {@link AcceptHeaderValue} objects. Defaults to true.
-	 * @return {string[] | AcceptHeaderValue[]} An array of desirable formats, as indicated by the 'Accept' header,
-	 * ordered from most desirable to least desirable. This will be an array of strings if 'collapseToStrings' is either
-	 * not set, or explicitly set to true, but will be an array of AcceptHeaderValue objects otherwise.
-	 * @see ImmutableHTTPHeadersManager#getPreferredSupportedFormats
-	 */
-	public getPreferredFormats(preferAuthoritativeHeader: boolean, collapseToStrings?: true): string[];
-	public getPreferredFormats(preferAuthoritativeHeader: boolean, collapseToStrings: false): AcceptHeaderValue[];
-	public getPreferredFormats(preferAuthoritativeHeader: boolean = true, collapseToStrings: boolean = true): string[] | AcceptHeaderValue[] {
-		
-		// TODO [7/28/21 @ 8:47 PM] Generify this method - other headers also use the 'q' parameter.
-		
-		// If the 'Accept' header isn't present
-		if (!this.hasHeader("Accept")) return ["*/*"];
-		
-		let acceptedFormats: AcceptHeaderValue[] = [];
-		
-		function processAcceptHeaderValue(rawFieldValue: string): void {
-			
-			// Sanitize and separate the values for the authoritative 'Accept' header into an array of strings.
-			let splitValues: string[] = rawFieldValue.trim().split(/,\s+/);
-			
-			for (let splitValue of splitValues) {
-				
-				let parsedValue: AcceptHeaderValue | undefined = parseAcceptHeaderValue(splitValue);
-				
-				if (parsedValue !== undefined) acceptedFormats.push(parsedValue);
-				// Otherwise, ignore the non-standard/malformed value and move on.
-				
-			}
-			
-		}
-		
-		if (preferAuthoritativeHeader) processAcceptHeaderValue(this.getAuthoritativeHeader("Accept") as string);
-		else {
-			
-			for (let headerValue of this.getHeader("Accept") as string[]) {
-				
-				processAcceptHeaderValue(headerValue);
-				
-			}
-			
-		}
-		
-		acceptedFormats.sort((element1: AcceptHeaderValue, element2: AcceptHeaderValue): number => {
-			
-			let relativeQualityFactorDelta: number = element2.relativeQualityFactor - element1.relativeQualityFactor;
-			
-			if (relativeQualityFactorDelta !== 0) return relativeQualityFactorDelta;
-			else {
-				
-				// If that didn't work (they have the same relative quality factor), sort them in this order:
-				// Highest Priority -> text/csv -> 2 pts/1 pt  -> 3
-				//                     text/*   -> 2 pts/0 pts -> 2
-				//                     */text   -> 0 pts/1 pt  -> 1
-				// Lowest Priority  -> */*      -> 0 pts/0 pts -> 0
-				
-				let element1Priority: number = 0;
-				let element2Priority: number = 0;
-				
-				if (element1.mimePrimaryType !== "*") element1Priority += 2;
-				if (element2.mimePrimaryType !== "*") element2Priority += 2;
-				if (element1.mimeSecondaryType !== "*") element1Priority += 1;
-				if (element2.mimeSecondaryType !== "*") element2Priority += 1;
-				
-				return element2Priority - element1Priority;
-				
-			}
-			
-		});
-		
-		if (collapseToStrings) {
-			
-			return acceptedFormats.map((element: AcceptHeaderValue): string => {
-				
-				return `${element.mimePrimaryType}/${element.mimeSecondaryType}`;
-				
-			});
-			
-		} else return acceptedFormats;
-		
-	}
-	
-	/**
-	 * Returns an array of preferred, supported formats, as decided by a combination of the 'Accept' header on this
-	 * object, as well as the array of supported formats provided by the caller.<br />
-	 *
-	 * In other words, the formats returned by this function represent the intersection of the set of formats that are
-	 * acceptable based on the 'Accept' header on this object, as well as the set of supported formats specified by the
-	 * caller.<br />
-	 *
-	 * This function's return value is stable to the input array - in other words, if a given format is specified before
-	 * another format in the input array, and both formats are acceptable, matches to the earlier format will show up
-	 * before matches to the later format in the output array.
-	 *
-	 * @param {string[]} supportedFormats An array of strings representing the formats supported by the caller. Each
-	 * element should reference a valid MIME type as specified by
-	 * <a href="https://tools.ietf.org/html/rfc6838">RFC 6838</a> and listed on
-	 * <a href="https://www.iana.org/assignments/media-types/media-types.xhtml">the IANA's 'Media Types' page</a>.
-	 * @param {boolean} preferAuthoritativeHeader
-	 * @return {string[]}
-	 */
-	public getPreferredSupportedFormats(supportedFormats: string[], preferAuthoritativeHeader: boolean = true): string[] {
-		
-		let preferredFormats: AcceptHeaderValue[] = this.getPreferredFormats(preferAuthoritativeHeader, false);
-		let preferredSupportedFormats: string[] = [];
-		
-		for (let preferredFormat of preferredFormats) {
-			
-			let regexString: string = "";
-			
-			regexString += "^";
-			regexString += (preferredFormat.mimePrimaryType === "*" ? ".+" : preferredFormat.mimePrimaryType);
-			regexString += "/";
-			regexString += (preferredFormat.mimeSecondaryType === "*" ? ".+" : preferredFormat.mimeSecondaryType);
-			regexString += "$";
-			
-			let preferredFormatRegex: RegExp = new RegExp(regexString);
-			
-			for (let supportedFormat of supportedFormats) {
-				
-				if (preferredFormatRegex.test(supportedFormat)) preferredSupportedFormats.push(supportedFormat);
-				
-			}
-			
-		}
-		
-		// Convert the array into a set (removing duplicates), and then convert it back.
-		return Array.from(new Set(preferredSupportedFormats));
 		
 	}
 	

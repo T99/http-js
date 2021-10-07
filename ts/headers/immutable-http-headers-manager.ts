@@ -1,34 +1,16 @@
 import { HTTPHeaders } from "./http-headers-manager";
 import { HTTPHeaderField } from "../schema/http-header-fields";
+import { HTTPAcceptHeaderManager } from "./http-accept-header-manager";
 
 // DOC-ME [9/20/2021 @ 4:48 PM] Documentation is required!
 export type FieldTransformer = (field: string) => string;
 
-/**
- * Represents the pertinent information stored in a single 'Accept' header value.
- *
- * For the following raw 'Accept' header value:
- * <pre>
- *     audio/mp3;q=0.8
- * </pre>
- *
- * The following AcceptHeaderValue object would match:
- * <pre>
- * {
- *     "mimePrimaryType": "audio",
- *     "mimeSecondaryType": "mp3",
- *     "relativeQualityFactor": 0.8
- * }
- * </pre>
- */
-export type AcceptHeaderValue = {
-	mimePrimaryType: string,
-	mimeSecondaryType: string,
-	relativeQualityFactor: number
-};
+
 
 // DOC-ME [7/27/2021 @ 3:27 PM] Documentation is required!
 export interface ImmutableHTTPHeadersManager {
+	
+	Accept: HTTPAcceptHeaderManager;
 	
 	/**
 	 * Returns an object containing all of the HTTP headers and their values for this collection of headers.
@@ -84,68 +66,6 @@ export interface ImmutableHTTPHeadersManager {
 	 * otherwise undefined.
 	 */
 	getAuthoritativeHeader(field: HTTPHeaderField): string | undefined;
-	
-	/**
-	 * Returns an array of desirable formats, as indicated by the 'Accept' header, ordered from most desirable to least
-	 * desirable.<br />
-	 *
-	 * This is determined based on the 'q' parameter, which can optionally be specified for each 'Accept' header
-	 * value.<br />
-	 * Each value (in which the aforementioned 'q' parameter is specified) takes the form:
-	 * <pre>
-	 *     mimePrimaryType/mimeSecondaryType;q=relativeQualityFactor
-	 * </pre>
-	 *
-	 * For example:
-	 * <pre>
-	 *     application/json;q=0.5
-	 * </pre>
-	 *
-	 * Values for which a relative quality factor is not explicitly set default to a value of 1. More explicit MIME
-	 * types are also always preferred over less explicit types. For example:
-	 * <pre>
-	 *     image/webp;q=0.7
-	 * </pre>
-	 *
-	 * Would take precedence over:
-	 * <pre>
-	 *     image/*;q=0.7
-	 * </pre>
-	 *
-	 * @param {boolean} preferAuthoritativeHeader Whether or not to exclusively use the authoritative 'Accept' header
-	 * to determine the preferred format. If not, all 'Accept' headers will be aggregated in order to find the preferred
-	 * format.
-	 * @param {boolean} collapseToStrings An optional parameter that determines the format of the return value. Set to
-	 * true if the return value should consist of strings, or false if the return value should consist of an array of
-	 * {@link AcceptHeaderValue} objects. Defaults to true.
-	 * @return {string[] | AcceptHeaderValue[]} An array of desirable formats, as indicated by the 'Accept' header,
-	 * ordered from most desirable to least desirable. This will be an array of strings if 'collapseToStrings' is either
-	 * not set, or explicitly set to true, but will be an array of AcceptHeaderValue objects otherwise.
-	 * @see ImmutableHTTPHeadersManager#getPreferredSupportedFormats
-	 */
-	getPreferredFormats(preferAuthoritativeHeader: boolean, collapseToStrings?: true): string[];
-	getPreferredFormats(preferAuthoritativeHeader: boolean, collapseToStrings: false): AcceptHeaderValue[];
-	
-	/**
-	 * Returns an array of preferred, supported formats, as decided by a combination of the 'Accept' header on this
-	 * object, as well as the array of supported formats provided by the caller.<br />
-	 *
-	 * In other words, the formats returned by this function represent the intersection of the set of formats that are
-	 * acceptable based on the 'Accept' header on this object, as well as the set of supported formats specified by the
-	 * caller.<br />
-	 *
-	 * This function's return value is stable to the input array - in other words, if a given format is specified before
-	 * another format in the input array, and both formats are acceptable, matches to the earlier format will show up
-	 * before matches to the later format in the output array.
-	 *
-	 * @param {string[]} supportedFormats An array of strings representing the formats supported by the caller. Each
-	 * element should reference a valid MIME type as specified by
-	 * <a href="https://tools.ietf.org/html/rfc6838">RFC 6838</a> and listed on
-	 * <a href="https://www.iana.org/assignments/media-types/media-types.xhtml">the IANA's 'Media Types' page</a>.
-	 * @param {boolean} preferAuthoritativeHeader
-	 * @return {string[]}
-	 */
-	getPreferredSupportedFormats(supportedFormats: string[], preferAuthoritativeHeader: boolean): string[];
 	
 	/**
 	 * Returns a string representation of this ImmutableHeadersManager class, formatted as though it were part of an

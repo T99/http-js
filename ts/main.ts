@@ -24,9 +24,9 @@ export { HTTPHeadersManager, HTTPHeaders, ParseableHTTPHeaders } from "./headers
 export { MutableHTTPHeadersManager } from "./headers/mutable-http-headers-manager";
 export {
 	ImmutableHTTPHeadersManager,
-	AcceptHeaderValue,
 	FieldTransformer
 } from "./headers/immutable-http-headers-manager";
+export { HTTPAcceptHeaderManager, AcceptHeaderValue } from "./headers/http-accept-header-manager";
 
 // '/messages/'
 
