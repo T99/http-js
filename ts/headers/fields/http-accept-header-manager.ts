@@ -1,7 +1,13 @@
 import { HTTPHeadersManager } from "../http-headers-manager";
-import { HTTPQualityWeightedHeader, QualityWeightedValue } from "./http-quality-weighted-header";
+import {
+	GenericQualityWeightedValue,
+	HTTPQualityWeightedHeader,
+	QualityWeightedValue
+} from "./http-quality-weighted-header";
 
-// DOC-ME [10/8/2021 @ 3:29 PM] Documentation is required!
+/**
+ * Represents a given chunk of data's MIME type. 
+ */
 type MIMEType = {
 	
 	mimePrimaryType: string,
@@ -27,17 +33,16 @@ type MIMEType = {
  * }
  * </pre>
  */
-export type AcceptHeaderValue = {
-	
-	mimePrimaryType: string,
-	
-	mimeSecondaryType: string,
-	
-	relativeQualityFactor: number
-	
-};
+export type AcceptHeaderValue = MIMEType & QualityWeightedValue;
 
-export class HTTPAcceptHeaderManager {
+/**
+ * A class that seeks to encapsulate much of the interfacing logic with the HTTP 'Accept' header and its values.
+ * 
+ * @author Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/)
+ * @version v0.1.0
+ * @since v0.1.0
+ */
+export class HTTPAcceptHeaderManager extends HTTPQualityWeightedHeader {
 	
 	/**
 	 * Initializes a new HTTPAcceptHeaderManager instance, off of the specified {@link HTTPHeadersManager}, and
@@ -56,82 +61,54 @@ export class HTTPAcceptHeaderManager {
 	}
 	
 	/**
+	 * Returns a regular expression that has been created to match strings that represent the given MIME type.
 	 * 
-	 * 
-	 * @param {string} mime
-	 * @returns {AcceptHeaderValue | undefined}
+	 * @param {MIMEType} mimeType The MIME type for which to create and return a regular expression.
+	 * @returns {RegExp} A regular expression that matches strings representative of the given MIME type.
 	 */
-	public static parseMIMEString(mime: string): AcceptHeaderValue | undefined {
-		
-		let matches: string[] | null = mime.match(ACCEPT_HEADER_VALUE_REGEX);
-		
-		// If we found at least the MIME type parts...
-		if (matches !== null && matches.length >= 3) {
-			
-			let mimeType: string = matches[1] as string;
-			let mimeSubtype: string = matches[2] as string;
-			let relativeQualityFactor: number = 1; // <- Default value, as per spec.
-			
-			// If we found a value for the relative quality factor...
-			if (matches?.length >= 4) {
-				
-				let parsedNumericValue: number = parseFloat(matches[3]);
-				
-				// Make sure that the value wasn't somehow malformed.
-				// This check shouldn't be necessary based on the above Regex, but better safe than erroring.
-				if (!isNaN(parsedNumericValue)) relativeQualityFactor = parsedNumericValue;
-				
-			}
-			
-			return { mimePrimaryType: mimeType, mimeSecondaryType: mimeSubtype, relativeQualityFactor };
-			
-		} else return undefined;
-		
-	}
-	
-	public static parseMIMEListString(mimeList: string): AcceptHeaderValue[] {
-		
-		let result: AcceptHeaderValue[] = [];
-		
-		// Sanitize and separate the values for the authoritative 'Accept' header into an array of strings.
-		let splitValues: string[] = mimeList.trim().split(/,\s*/);
-		
-		for (let splitValue of splitValues) {
-			
-			let parsedValue: AcceptHeaderValue | undefined = HTTPAcceptHeaderManager.parseMIMEString(splitValue);
-			
-			if (parsedValue !== undefined) result.push(parsedValue);
-			// Otherwise, ignore the non-standard/malformed value and move on.
-			
-		}
-		
-		return result;
-		
-	}
-	
-	protected static getRegexForMIMEType(mimeType: string): RegExp {
-		
-		let separatorIndex: number = mimeType.indexOf("/");
-		let mimePrimaryType: string = mimeType.substring(0, separatorIndex);
-		let mimeSecondaryType: string = mimeType.substring(separatorIndex + 1);
+	protected static getRegexForMIMEType(mimeType: MIMEType): RegExp {
 		
 		let regexString: string = "";
 		
 		regexString += "^";
-		regexString += (mimePrimaryType === "*" ? ".+" : mimePrimaryType);
+		regexString += (mimeType.mimePrimaryType === "*" ? ".+" : mimeType.mimePrimaryType);
 		regexString += "/";
-		regexString += (mimeSecondaryType === "*" ? ".+" : mimeSecondaryType);
+		regexString += (mimeType.mimeSecondaryType === "*" ? ".+" : mimeType.mimeSecondaryType);
 		regexString += "$";
 		
 		return new RegExp(regexString);
 		
 	}
-
+	
+	/**
+	 * Returns true if the provided value is a MIME type matching one of the acceptable formats specified by the
+	 * 'Accept' header.
+	 * 
+	 * @param {string} mimeString A string representation of the MIME type for which to determine its acceptability.
+	 * @returns {boolean} true if the provided value is a MIME type matching one of the acceptable formats specified by
+	 * the 'Accept' header. 
+	 */
 	public accepts(mimeString: string): boolean {
 		
 		return this.getAcceptedValues().some(
-			(value: AcceptHeaderValue): boolean => `${value.mimePrimaryType}/${value.mimeSecondaryType}` === mimeString
+			(value: AcceptHeaderValue): boolean => HTTPAcceptHeaderManager.getRegexForMIMEType(value).test(mimeString)
 		);
+		
+	}
+	
+	/**
+	 * Returns the quality factor of the provided MIME type, as indicated by the 'Accept' header.
+	 * 
+	 * A quality of zero means that the given MIME type is not acceptable.
+	 * 
+	 * @param {string} mimeString A string representation of the MIME type for which to determine its quality factor.
+	 * @returns {number} The quality factor of the specified MIME type.
+	 */
+	public getMIMETypeQuality(mimeString: string): number {
+		
+		return this.getAcceptedValues().find(
+			(value: AcceptHeaderValue): boolean => HTTPAcceptHeaderManager.getRegexForMIMEType(value).test(mimeString)
+		)?.relativeQualityFactor ?? 0;
 		
 	}
 	
@@ -150,32 +127,25 @@ export class HTTPAcceptHeaderManager {
 	 * @return {string[]} An array that represents the intersection between the input set, and the set of MIME types
 	 * represented by the associated header.
 	 */
-	public filter(...mimeStrings: string[]): string[] {
+	public filterToSupportedMIMEs(...mimeStrings: string[]): string[] {
 		
-		let preferredSupportedFormats: string[] = [];
+		// Note to self: The reason I didn't 'unroll' this function to use `#accepts` is because each call to `#accepts`
+		// results in a call to `#getAcceptedValues`, whereas this function only calls it once.
 		
-		for (let preferredFormat of this.getAcceptedValues()) {
+		let acceptedValues: AcceptHeaderValue[] = this.getAcceptedValues();
+		
+		// Filter the given MIME strings down to those for which a matching Accept value can be found.
+		return mimeStrings.filter((mimeString: string): boolean => {
 			
-			let regexString: string = "";
-			
-			regexString += "^";
-			regexString += (preferredFormat.mimePrimaryType === "*" ? ".+" : preferredFormat.mimePrimaryType);
-			regexString += "/";
-			regexString += (preferredFormat.mimeSecondaryType === "*" ? ".+" : preferredFormat.mimeSecondaryType);
-			regexString += "$";
-			
-			let preferredFormatRegex: RegExp = new RegExp(regexString);
-			
-			for (let supportedFormat of mimeStrings) {
+			// If there exists some accepted value that matches the given MIME string, return true.
+			return acceptedValues.some((acceptedValue: AcceptHeaderValue): boolean => {
 				
-				if (preferredFormatRegex.test(supportedFormat)) preferredSupportedFormats.push(supportedFormat);
+				// Return true if the regex generated from this Accept value matches the current MIME string.
+				return HTTPAcceptHeaderManager.getRegexForMIMEType(acceptedValue).test(mimeString);
 				
-			}
+			});
 			
-		}
-		
-		// Convert the array into a set (removing duplicates), and then convert it back.
-		return Array.from(new Set(preferredSupportedFormats));
+		});
 		
 	}
 	
@@ -196,65 +166,29 @@ export class HTTPAcceptHeaderManager {
 		
 	}
 	
+	/**
+	 * Returns an array of 'Accept' header values, as parsed from the 'Accept' header of the associated HTTP message.
+	 * 
+	 * @returns {AcceptHeaderValue[]} An array of parsed 'Accept' header values.
+	 */
 	public getAcceptedValues(): AcceptHeaderValue[] {
 		
-		let acceptedValues: AcceptHeaderValue[];
-		
-		// If the 'Accept' header isn't present...
-		if (!this.headersManager.hasHeader("Accept")) {
+		return this.getQualityWeightedValues()
+			.map((genericValue: GenericQualityWeightedValue): AcceptHeaderValue | undefined => {
 			
-			acceptedValues = [{
-				mimePrimaryType: "*",
-				mimeSecondaryType: "*",
-				relativeQualityFactor: 1
-			}];
-			
-		} else {
-			
-			if (!this.useAllHeaders) {
+				let separatorIndex: number = genericValue.value.indexOf("/");
 				
-				acceptedValues = HTTPAcceptHeaderManager.parseMIMEListString(
-					this.headersManager.getAuthoritativeHeader("Accept") as string
-				);
+				if (separatorIndex === -1) return undefined;
 				
-			} else {
-				
-				acceptedValues = this.headersManager.getHeader("Accept")
-					?.map(HTTPAcceptHeaderManager.parseMIMEListString)
-					?.flat() ?? [];
-				
-			}
-			
-			acceptedValues.sort((element1: AcceptHeaderValue, element2: AcceptHeaderValue): number => {
-				
-				let relativeQualityFactorDelta: number = element2.relativeQualityFactor - element1.relativeQualityFactor;
-				
-				if (relativeQualityFactorDelta !== 0) return relativeQualityFactorDelta;
-				else {
+				return {
 					
-					// If that didn't work (they have the same relative quality factor), sort them in this order:
-					// Highest Priority -> text/csv -> 2 pts/1 pt  -> 3
-					//                     text/*   -> 2 pts/0 pts -> 2
-					//                     */text   -> 0 pts/1 pt  -> 1
-					// Lowest Priority  -> */*      -> 0 pts/0 pts -> 0
-					
-					let element1Priority: number = 0;
-					let element2Priority: number = 0;
-					
-					if (element1.mimePrimaryType !== "*") element1Priority += 2;
-					if (element2.mimePrimaryType !== "*") element2Priority += 2;
-					if (element1.mimeSecondaryType !== "*") element1Priority += 1;
-					if (element2.mimeSecondaryType !== "*") element2Priority += 1;
-					
-					return element2Priority - element1Priority;
+					mimePrimaryType: genericValue.value.substring(0, separatorIndex),
+					mimeSecondaryType: genericValue.value.substring(separatorIndex + 1),
+					relativeQualityFactor: genericValue.relativeQualityFactor
 					
 				}
 				
-			});
-			
-		}
-		
-		return acceptedValues;
+			}).filter((value: any): boolean => value !== undefined) as AcceptHeaderValue[];
 		
 	}
 	
