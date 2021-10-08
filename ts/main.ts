@@ -26,7 +26,7 @@ export {
 	ImmutableHTTPHeadersManager,
 	FieldTransformer
 } from "./headers/immutable-http-headers-manager";
-export { HTTPAcceptHeaderManager, AcceptHeaderValue } from "./headers/http-accept-header-manager";
+export { HTTPAcceptHeaderManager, AcceptHeaderValue } from "./headers/fields/http-accept-header-manager";
 
 // '/messages/'
 
@@ -75,9 +75,9 @@ export {
 // '/schema/'
 export { HTTPStatusCode } from "./schema/http-status-code";
 export { HTTPMethod } from "./schema/http-method";
-export { HTTPHeaderField, CommonHTTPHeaderFields } from "./schema/http-header-fields";
+export { HTTPHeaderField, CommonHTTPHeaderFields } from "./schema/http-headers";
 export { MIMETypeUtilities, StringMIMEType, PreloadType, EXTENSION_MAP } from "./schema/mime-types";
-export { HTTP_METHOD_REGEXP } from "./schema/http-regex";
+export { HTTP_METHOD_REGEXP } from "./parsing/http-regex";
 
 // '/util/'
 export { determineLineBreakStyle } from "./util/determine-line-break-style";
