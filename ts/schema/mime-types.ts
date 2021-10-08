@@ -101,6 +101,7 @@ export const EXTENSION_MAP: ExtensionMapType = {
 
 export class MIMETypeUtilities {
 
+	// TODO [10/8/2021 @ 3:49 PM] This doesn't seem right...
 	protected static TEXTUAL_CONTENT_TYPE_REGEX: RegExp = /a/;
 
 	public static getContentTypeFromFile(path: string): StringMIMEType {
