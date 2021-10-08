@@ -36,10 +36,9 @@ export class HTTPMessage implements ImmutableHTTPMessage, MutableHTTPMessage {
 	protected url: URL;
 	
 	// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
-	protected headersManager: HTTPHeadersManager;
-	
-	// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 	protected body: any;
+	
+	public headers: HTTPHeadersManager;
 	
 	// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 	public constructor(config: HTTPMessageConfig) {
@@ -50,8 +49,8 @@ export class HTTPMessage implements ImmutableHTTPMessage, MutableHTTPMessage {
 		if (typeof config.url === "string") this.url = new URL(config.url);
 		else this.url = config.url as URL;
 		
-		if (config.headers instanceof HTTPHeadersManager) this.headersManager = config.headers;
-		else this.headersManager = new HTTPHeadersManager(config.headers);
+		if (config.headers instanceof HTTPHeadersManager) this.headers = config.headers;
+		else this.headers = new HTTPHeadersManager(config.headers);
 		
 	}
 	
@@ -101,12 +100,6 @@ export class HTTPMessage implements ImmutableHTTPMessage, MutableHTTPMessage {
 		
 		if (typeof url === "string") this.url = new URL(url);
 		else this.url = url;
-		
-	}
-	
-	public getHeadersManager(): HTTPHeadersManager {
-		
-		return this.headersManager;
 		
 	}
 	

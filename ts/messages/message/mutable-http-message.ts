@@ -12,6 +12,8 @@ import { HTTPVersionObject } from "../../parsing/http-version-parsing";
  */
 export interface MutableHTTPMessage extends ImmutableHTTPMessage {
 	
+	readonly headers: MutableHTTPHeadersManager;
+	
 	// DOC-ME [10/1/2021 @ 11:30 AM] Documentation is required!
 	setHTTPVersion(version?: string | number | HTTPVersionObject): void;
 	
@@ -20,8 +22,6 @@ export interface MutableHTTPMessage extends ImmutableHTTPMessage {
 	
 	// DOC-ME [9/20/2021 @ 5:00 PM] Documentation is required!
 	setURL(url: string | URL): void;
-	
-	getHeadersManager(): MutableHTTPHeadersManager;
 	
 	// DOC-ME [9/20/2021 @ 5:00 PM] Documentation is required!
 	setBody(body: any): void;

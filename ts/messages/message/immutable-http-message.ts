@@ -12,6 +12,11 @@ import type { ImmutableHTTPHeadersManager } from "../../headers/immutable-http-h
 export interface ImmutableHTTPMessage {
 	
 	/**
+	 * The {@link ImmutableHTTPHeadersManager} for this HTTP message.
+	 */
+	readonly headers: ImmutableHTTPHeadersManager;
+	
+	/**
 	 * Returns the HTTP version of this HTTP message in the requested format.
 	 *
 	 * "major": Returns 'x' for versions of the form 'x.y'.<br />
@@ -50,13 +55,6 @@ export interface ImmutableHTTPMessage {
 	 * @return {URL} The URL for this HTTP message.
 	 */
 	getURL(): URL;
-	
-	/**
-	 * Returns the {@link ImmutableHTTPHeadersManager} for this HTTP message.
-	 *
-	 * @returns {ImmutableHTTPHeadersManager} The ImmutableHTTPHeadersManager for this HTTP message.
-	 */
-	getHeadersManager(): ImmutableHTTPHeadersManager;
 	
 	/**
 	 * Returns the body of this HTTP message.

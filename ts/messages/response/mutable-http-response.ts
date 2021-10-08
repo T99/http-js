@@ -7,7 +7,7 @@ import { HTTPStatusCode } from "../../schema/http-status-code";
 // DOC-ME [9/20/2021 @ 5:00 PM] Documentation is required!
 export interface MutableHTTPResponse extends ImmutableHTTPResponse, MutableHTTPMessage {
 	
-	getHeadersManager(): MutableHTTPHeadersManager;
+	readonly headers: MutableHTTPHeadersManager;
 	
 	// DOC-ME [10/1/2021 @ 12:59 PM] Documentation is required!
 	setMatchingRequest(request: HTTPRequest): void;

@@ -6,7 +6,7 @@ import { HTTPResponse } from "../response/http-response";
 // DOC-ME [9/20/2021 @ 5:00 PM] Documentation is required!
 export interface MutableHTTPRequest	extends ImmutableHTTPRequest, MutableHTTPMessage {
 	
-	getHeadersManager(): MutableHTTPHeadersManager;
+	readonly headers: MutableHTTPHeadersManager;
 	
 	setMatchingResponse(response: HTTPResponse): void;
 
