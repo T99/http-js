@@ -1,6 +1,5 @@
-export type HTTPHeaderField = CommonHTTPHeaderFields | string;
-
-export type CommonHTTPHeaderFields =
+export type HTTPHeaderField = 
+	| string
 	| "Accept"
 	| "Authorization"
 	| "Age"
@@ -18,3 +17,17 @@ export type CommonHTTPHeaderFields =
 	| "Set-Cookie"
 	| "Vary"
 	| "Warning";
+
+export type HTTPContentEncoding =
+	| string
+	| "aes128gcm"
+	| "br"
+	| "compress"
+	| "deflate"
+	| "exi"
+	| "gzip"
+	| "identity"
+	| "pack200-gzip"
+	| "x-compress"
+	| "x-gzip"
+	| "zstd";
