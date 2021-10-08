@@ -4,7 +4,7 @@
  * Project: http-js
  */
  
-import { CookieSameSiteValue } from "../headers/http-cookies-header-manager";
+export type CookieSameSiteValue = "Strict" | "Lax" | "None";
 
 export type HTTPCookie = {
 	
