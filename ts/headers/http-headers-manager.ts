@@ -122,7 +122,7 @@ export class HTTPHeadersManager {
 	// DOC-ME [9/20/2021 @ 4:48 PM] Documentation is required!
 	protected headerFieldTransformer: FieldTransformer;
 	
-	public readonly Accept: HTTPAcceptHeaderManager;
+	public readonly accept: HTTPAcceptHeaderManager;
 	
 	public readonly AcceptEncoding!: HTTPAcceptHeaderManager;
 	
@@ -158,7 +158,7 @@ export class HTTPHeadersManager {
 			
 			this.headers = JSON.parse(JSON.stringify(headersManager.headers));
 			this.headerFieldTransformer = headersManager.headerFieldTransformer;
-			this.Accept = new HTTPAcceptHeaderManager(this);
+			this.accept = new HTTPAcceptHeaderManager(this);
 			
 		// If we are building a ImmutableHTTPHeadersManager instance from structured data...
 		} else {
@@ -214,7 +214,7 @@ export class HTTPHeadersManager {
 				
 			}
 			
-			this.Accept = new HTTPAcceptHeaderManager(this);
+			this.accept = new HTTPAcceptHeaderManager(this);
 			
 		}
 		
