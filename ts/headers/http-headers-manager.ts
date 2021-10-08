@@ -1,8 +1,9 @@
 import { StringMIMEType } from "../schema/mime-types";
-import { FieldTransformer, ImmutableHTTPHeadersManager } from "./immutable-http-headers-manager";
-import { MutableHTTPHeadersManager } from "./mutable-http-headers-manager";
-import { HTTPHeaderField } from "../schema/http-header-fields";
-import { HTTPAcceptHeaderManager } from "./http-accept-header-manager";
+import { HTTPHeaderField } from "../schema/http-headers";
+import { HTTPAcceptHeaderManager } from "./fields/http-accept-header-manager";
+
+// DOC-ME [9/20/2021 @ 4:48 PM] Documentation is required!
+export type FieldTransformer = (field: string) => string;
 
 /**
  * An object whose fields are each valid HTTP header fields, each field having the values assigned to the HTTP header
@@ -82,7 +83,7 @@ export type ParseableHTTPHeaders = {
 };
 
 // DOC-ME [9/20/2021 @ 4:48 PM] Documentation is required!
-export class HTTPHeadersManager implements ImmutableHTTPHeadersManager, MutableHTTPHeadersManager {
+export class HTTPHeadersManager {
 	
 	/**
 	 * A function that transforms HTTP header field names from whatever form/case they are in, to 'Title Case'.

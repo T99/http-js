@@ -1,11 +1,9 @@
 import { HTTPMessage, HTTPMessageConfig } from "../message/http-message";
-import { ImmutableHTTPRequest } from "./immutable-http-request";
-import { MutableHTTPRequest } from "./mutable-http-request";
 import { HTTPResponse } from "../response/http-response";
 
 export type HTTPRequestConfig = HTTPMessageConfig & {};
 
-export class HTTPRequest extends HTTPMessage implements ImmutableHTTPRequest, MutableHTTPRequest {
+export class HTTPRequest extends HTTPMessage {
 	
 	protected response?: HTTPResponse;
 	

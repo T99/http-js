@@ -1,6 +1,4 @@
 import { HTTPMessage, HTTPMessageConfig } from "../message/http-message";
-import { ImmutableHTTPResponse } from "./immutable-http-response";
-import { MutableHTTPResponse } from "./mutable-http-response";
 import { HTTPStatusCode } from "../../schema/http-status-code";
 import { HTTPRequest } from "../request/http-request";
 
@@ -10,7 +8,7 @@ export type HTTPResponseConfig = HTTPMessageConfig & {
 	
 };
 
-export class HTTPResponse extends HTTPMessage implements ImmutableHTTPResponse, MutableHTTPResponse {
+export class HTTPResponse extends HTTPMessage {
 	
 	// DOC-ME [10/1/2021 @ 12:57 PM] Documentation is required!
 	protected request?: HTTPRequest;

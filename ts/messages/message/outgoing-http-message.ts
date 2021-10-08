@@ -24,7 +24,7 @@ export interface OutgoingHTTPMessage {
 	 *
 	 * @returns {number} A numeric timestamp indicating the time at which this message was sent, or undefined if this
 	 * message has not yet been sent.
-	 * @see ImmutableHTTPMessage#hasBeenSent
+	 * @see HTTPMessage#hasBeenSent
 	 */
 	timeSent(): number | undefined;
 	
