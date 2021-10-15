@@ -1,7 +1,16 @@
-import { HTTPCookie } from "../../parsing/cookie-parsing";
+import { HTTPCookie, stringifyCookie } from "../../parsing/cookie-parsing";
+import { HTTPHeadersManager } from "../http-headers-manager";
 
 
 export class HTTPCookiesHeaderManager {
+	
+	protected readonly headersManager: HTTPHeadersManager;
+	
+	public constructor(headersManager: HTTPHeadersManager) {
+		
+		this.headersManager = headersManager;
+		
+	}
 	
 	/**
 	 * Adds the provided 
@@ -28,8 +37,25 @@ export class HTTPCookiesHeaderManager {
 			
 		}
 		
-		// TODO [10/8/2021 @ 3:46 PM] Append the Set-Cookie header...
-		cookie;
+		this.headersManager.appendHeader("Set-Cookie", stringifyCookie(cookie));
+		
+	}
+	
+	/**
+	 * Attempts to instruct the client to 'unset' a given cookie (specified by the caller) by re-setting the cookie with
+	 * an 'expires' date in the distant past.
+	 * 
+	 * @param {string} name The name/identifier of the cookie that should be unset.
+	 */
+	public unsetCookie(name: string): void {
+		
+		this.headersManager.appendHeader("Set-Cookie", stringifyCookie({
+			name,
+			value: "",
+			secure: false,
+			httpOnly: false,
+			expires: new Date(0)
+		}));
 		
 	}
 	
