@@ -1,6 +1,7 @@
 import { StringMIMEType } from "../schema/mime-types";
 import { HTTPHeaderField } from "../schema/http-headers";
 import { HTTPAcceptHeaderManager } from "./fields/http-accept-header-manager";
+import { HTTPCookiesHeaderManager } from "./fields/http-cookies-header-manager";
 
 // DOC-ME [9/20/2021 @ 4:48 PM] Documentation is required!
 export type FieldTransformer = (field: string) => string;
@@ -124,9 +125,11 @@ export class HTTPHeadersManager {
 	
 	public readonly accept: HTTPAcceptHeaderManager;
 	
-	public readonly AcceptEncoding!: HTTPAcceptHeaderManager;
+	public readonly acceptEncoding!: HTTPAcceptHeaderManager;
 	
-	public readonly AcceptLanguage!: HTTPAcceptHeaderManager;
+	public readonly acceptLanguage!: HTTPAcceptHeaderManager;
+	
+	public readonly cookies: HTTPCookiesHeaderManager;
 	
 	/**
 	 * Initializes an empty ImmutableHTTPHeadersManager instance.
@@ -159,6 +162,7 @@ export class HTTPHeadersManager {
 			this.headers = JSON.parse(JSON.stringify(headersManager.headers));
 			this.headerFieldTransformer = headersManager.headerFieldTransformer;
 			this.accept = new HTTPAcceptHeaderManager(this);
+			this.cookies = new HTTPCookiesHeaderManager(this);
 			
 		// If we are building a ImmutableHTTPHeadersManager instance from structured data...
 		} else {
@@ -215,6 +219,7 @@ export class HTTPHeadersManager {
 			}
 			
 			this.accept = new HTTPAcceptHeaderManager(this);
+			this.cookies = new HTTPCookiesHeaderManager(this);
 			
 		}
 		
@@ -313,8 +318,8 @@ export class HTTPHeadersManager {
 	 * Accept: video/ogg
 	 * </pre>
 	 *
-	 * @param {HTTPHeaderField} field
-	 * @param {string[]} value
+	 * @param {HTTPHeaderField} field The HTTP header field for which to set the specified value(s).
+	 * @param {string[]} value The value(s) to set for the specified HTTP header field.
 	 */
 	public setHeader(field: "Content-Type" | "Accept", value: StringMIMEType): void;
 	public setHeader(field: HTTPHeaderField, ...value: string[]): void;
@@ -324,6 +329,27 @@ export class HTTPHeadersManager {
 			originalFields: values.map((): string => field),
 			values
 		};
+		
+	}
+	
+	/**
+	 * Appends new header field + value pairs to the headers of the relevant request without overwriting existing values
+	 * if they exist.
+	 * 
+	 * @param {HTTPHeaderField} field The HTTP header field for which to append the specified value(s).
+	 * @param {string} values The value(s) to append for the specified HTTP header field.
+	 */
+	public appendHeader(field: HTTPHeaderField, ...values: string[]): void {
+		
+		let standardizedField: string = field.toLowerCase();
+		
+		if (this.headers[standardizedField] === undefined) this.setHeader(field, ...values);
+		else {
+			
+			this.headers[standardizedField].originalFields.push(...values.map((): string => field));
+			this.headers[standardizedField].values.push(...values);
+			
+		}
 		
 	}
 	
