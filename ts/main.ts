@@ -20,34 +20,36 @@ export { HTTPRequestError } from "./error/http-request-error";
 export { HTTPMalformedMessageError } from "./error/http-malformed-message-error";
 
 // '/headers/'
-export { HTTPHeadersManager, HTTPHeaders, ParseableHTTPHeaders } from "./headers/http-headers-manager";
-export { MutableHTTPHeadersManager } from "./headers/mutable-http-headers-manager";
 export {
-	ImmutableHTTPHeadersManager,
+	HTTPHeadersManager,
+	HTTPHeaders,
+	ParseableHTTPHeaders,
 	FieldTransformer
-} from "./headers/immutable-http-headers-manager";
-export { HTTPAcceptHeaderManager, AcceptHeaderValue } from "./headers/fields/http-accept-header-manager";
+} from "./headers/http-headers-manager";
+
+	// '/headers/fields/'
+	export {
+		HTTPQualityWeightedHeader,
+		QualityWeightedValue,
+		GenericQualityWeightedValue
+	} from "./headers/fields/http-quality-weighted-header";
+	export { HTTPAcceptHeaderManager, AcceptHeaderValue } from "./headers/fields/http-accept-header-manager";
+	export { HTTPCookiesHeaderManager } from "./headers/fields/http-cookies-header-manager";
 
 // '/messages/'
 
 	// '/messages/message/'
 	export { HTTPMessage, HTTPMessageConfig } from "./messages/message/http-message";
-	export { MutableHTTPMessage } from "./messages/message/mutable-http-message";
-	export { ImmutableHTTPMessage } from "./messages/message/immutable-http-message";
 	export { IncomingHTTPMessage } from "./messages/message/incoming-http-message";
 	export { OutgoingHTTPMessage } from "./messages/message/outgoing-http-message";
 	
 	// '/messages/request/'
 	export { HTTPRequest, HTTPRequestConfig } from "./messages/request/http-request";
-	export { MutableHTTPRequest } from "./messages/request/mutable-http-request";
-	export { ImmutableHTTPRequest } from "./messages/request/immutable-http-request";
 	export { AbstractIncomingHTTPRequest } from "./messages/request/abstract-incoming-http-request";
 	export { AbstractOutgoingHTTPRequest } from "./messages/request/abstract-outgoing-http-request";
 
 	// '/messages/response/'
 	export { HTTPResponse, HTTPResponseConfig } from "./messages/response/http-response";
-	export { MutableHTTPResponse } from "./messages/response/mutable-http-response";
-	export { ImmutableHTTPResponse } from "./messages/response/immutable-http-response";
 	export { AbstractIncomingHTTPResponse } from "./messages/response/abstract-incoming-http-response";
 	export { AbstractOutgoingHTTPResponse } from "./messages/response/abstract-outgoing-http-response";
 	
@@ -65,6 +67,8 @@ export {
 	defaultBodyPrepperImplementation,
 	BodyPrepperFunction
 } from "./parsing/body-prepping";
+export { parseCookie, stringifyCookie, HTTPCookie, CookieSameSiteValue } from "./parsing/cookie-parsing";
+export { HTTP_METHOD_REGEXP } from "./parsing/http-regex";
 export {
 	normalizeHTTPVersion,
 	DEFAULT_HTTP_VERSION,
@@ -73,11 +77,10 @@ export {
 } from "./parsing/http-version-parsing";
 
 // '/schema/'
-export { HTTPStatusCode } from "./schema/http-status-code";
+export { HTTPHeaderField } from "./schema/http-headers";
 export { HTTPMethod } from "./schema/http-method";
-export { HTTPHeaderField, CommonHTTPHeaderFields } from "./schema/http-headers";
+export { HTTPStatusCode } from "./schema/http-status-code";
 export { MIMETypeUtilities, StringMIMEType, PreloadType, EXTENSION_MAP } from "./schema/mime-types";
-export { HTTP_METHOD_REGEXP } from "./parsing/http-regex";
 
 // '/util/'
 export { determineLineBreakStyle } from "./util/determine-line-break-style";
