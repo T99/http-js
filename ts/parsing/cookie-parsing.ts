@@ -166,22 +166,11 @@ export function parseCookie(cookie: string): HTTPCookie {
  * Converts an {@link HTTPCookie} object to it's equivalent string version, returning the result.
  * 
  * @param {HTTPCookie} cookie The {@link HTTPCookie} object to convert to a string.
- * @param {boolean} strict Whether or not the resulting string should be checked for technical validity against a regex
- * that represents the official specification.
- * @returns {string} The resulting string version of the provided {@link HTTPCookie} object. 
- * @throws {Error} If 'strict' is set to true and the resulting HTTP cookie is invalid.
+ * @returns {string} The resulting string version of the provided {@link HTTPCookie} object.
  */
-export function stringifyCookie(cookie: HTTPCookie, strict: boolean = true): string {
+export function stringifyCookie(cookie: HTTPCookie): string {
 	
 	let result: string = `${cookie.name}=${cookie.value}`;
-	
-	if (strict) {
-		
-		let regexResult: RegExpMatchArray | null = result.match(COOKIE_NAME_REGEX);
-		
-		if (regexResult === null) throw new Error("Cookie name or value contained invalid characters.");
-		
-	}
 	
 	if (cookie.maxAge !== undefined) result += `; Max-Age=${cookie.maxAge}`;
 	else if (cookie.expires !== undefined) result += `; Expires=${cookie.expires.toUTCString()}`;
