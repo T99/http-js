@@ -162,7 +162,11 @@ export class HTTPAcceptHeaderManager extends HTTPQualityWeightedHeader {
 		
 		let acceptedValues: AcceptHeaderValue[] = this.getAcceptedValues();
 		
-		return `${acceptedValues[0].mimePrimaryType}/${acceptedValues[0].mimeSecondaryType}`;
+		if (acceptedValues.length >= 1) {
+			
+			return `${acceptedValues[0].mimePrimaryType}/${acceptedValues[0].mimeSecondaryType}`;
+			
+		} else return "*/*";
 		
 	}
 	
