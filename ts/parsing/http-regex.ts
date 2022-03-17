@@ -1,4 +1,10 @@
 /*
+ * Created by Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/).
+ * 4:36 PM -- March 17, 2022.
+ * Project: @t99/http
+ */
+
+/*
  * All of the regular expressions in this file attempt to be fully compliant with the most recent defining standard for
  * HTTP messaging. The current spec that these regular expressions have been tested against is RFC2616, found here:
  * https://datatracker.ietf.org/doc/html/rfc2616

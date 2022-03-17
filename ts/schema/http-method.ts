@@ -1,5 +1,21 @@
+/*
+ * Created by Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/).
+ * 4:38 PM -- March 17, 2022.
+ * Project: @t99/http
+ */
+
+/**
+ * An enumeration of valid HTTP methods.
+ * 
+ * @author Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/)
+ * @version v0.1.0
+ * @since v0.1.0
+ */
 export class HTTPMethod {
 	
+	/**
+	 * A registry of valid/official HTTP methods that have been statically initialized on this class.
+	 */
 	protected static registry: Map<string, HTTPMethod> = new Map();
 	
 	public static readonly ACL: HTTPMethod = new HTTPMethod("ACL");
@@ -12,6 +28,9 @@ export class HTTPMethod {
 	
 	public static readonly COPY: HTTPMethod = new HTTPMethod("COPY");
 	
+	/**
+	 * The HTTP 'DELETE' method deletes the target resource.
+	 */
 	public static readonly DELETE: HTTPMethod = new HTTPMethod("DELETE");
 	
 	public static readonly GET: HTTPMethod = new HTTPMethod("GET");
@@ -38,6 +57,10 @@ export class HTTPMethod {
 	
 	public static readonly OPTIONS: HTTPMethod = new HTTPMethod("OPTIONS");
 	
+	/**
+	 * The HTTP 'PATCH' method functions similarly to the 'PUT' method, but rather than creating or replacing the target
+	 * resource, the request payload is instead used to partially modify an existing target resource.
+	 */
 	public static readonly PATCH: HTTPMethod = new HTTPMethod("PATCH");
 	
 	public static readonly POST: HTTPMethod = new HTTPMethod("POST");
@@ -76,8 +99,18 @@ export class HTTPMethod {
 	
 	public static readonly UNSUBSCRIBE: HTTPMethod = new HTTPMethod("UNSUBSCRIBE");
 	
+	/**
+	 * The method name for this HTTP method.
+	 * 
+	 * Example: 'GET', 'PUT', 'TRACE'
+	 */
 	protected readonly methodName!: string;
 	
+	/**
+	 * Initializes a new HTTPMethod with the provided method name.
+	 * 
+	 * @param {string} methodName The method name for this HTTP method.
+	 */
 	protected constructor(methodName: string) {
 		
 		if (HTTPMethod.registry.has(methodName)) return HTTPMethod.registry.get(methodName) as HTTPMethod;
@@ -91,6 +124,11 @@ export class HTTPMethod {
 		
 	}
 	
+	/**
+	 * Returns the method name for this HTTP method.
+	 * 
+	 * @returns {string} The method name for this HTTP method.
+	 */
 	public getName(): string {
 		
 		return this.methodName;
@@ -104,9 +142,14 @@ export class HTTPMethod {
 		
 	}
 	
+	/**
+	 * Returns the method name for this HTTP method.
+	 *
+	 * @returns {string} The method name for this HTTP method.
+	 */
 	public toString(): string {
 		
-		return this.methodName;
+		return this.getName();
 		
 	}
 	

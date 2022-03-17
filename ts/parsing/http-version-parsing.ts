@@ -1,7 +1,7 @@
 /*
  * Created by Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/).
  * 10:40 AM -- September 21st, 2021
- * Project: http-js
+ * Project: @t99/http
  */
 
 export type HTTPVersionFormat = "major" | "minor" | "full" | "object";

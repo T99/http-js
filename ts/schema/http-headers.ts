@@ -1,3 +1,9 @@
+/*
+ * Created by Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/).
+ * 4:38 PM -- March 17, 2022.
+ * Project: @t99/http
+ */
+
 export type HTTPHeaderField = 
 	| string
 	| "Accept"

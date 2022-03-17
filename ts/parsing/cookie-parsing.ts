@@ -1,11 +1,17 @@
 /*
  * Created by Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/).
  * 9:55 AM -- October 8th, 2021
- * Project: http-js
+ * Project: @t99/http
  */
- 
+
+/**
+ * An enumeration of acceptable values for an HTTP cookie's 'SameSite' value.
+ */
 export type CookieSameSiteValue = "Strict" | "Lax" | "None";
 
+/**
+ * An object representative of an HTTP cookie.
+ */
 export type HTTPCookie = {
 	
 	name: string;
@@ -34,12 +40,6 @@ export type HTTPCookie = {
  * between the cookie name and cookie value.
  */
 const COOKIE_NAME_REGEX: RegExp = /^\s*([^\x00-\x20()<>@,;:\\"\/[\]?={}]+)\s*=\s*(.+)$/;
-
-// /**
-//  * A regular express that matches the 'value' part of a textual HTTP cookie. The first capture group matches the
-//  * cookie's value, while the second capture group 
-//  */
-// const COOKIE_VALUE_REGEX: RegExp = /^\s*([^\x00-\x20",;\\]+)\s*;?\s*(.*)$/;
 
 /**
  * Attempts to parse HTTP cookie information out the provided string, returning the resulting {@link HTTPCookie} object.

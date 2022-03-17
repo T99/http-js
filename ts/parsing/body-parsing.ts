@@ -1,5 +1,14 @@
+/*
+ * Created by Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/).
+ * 4:36 PM -- March 17, 2022.
+ * Project: @t99/http
+ */
+
 import { HTTPMessage } from "../messages/message/http-message";
 
+/**
+ * An object representing the results of parsing the body of an HTTP request using a {@link BodyParserFunction}.
+ */
 export type BodyParserResult = {
 	type: "undefined" | "object" | "boolean" | "number" | "bigint" | "string" | "symbol" | "function" | string,
 	data: any

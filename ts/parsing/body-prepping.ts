@@ -1,3 +1,9 @@
+/*
+ * Created by Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/).
+ * 4:36 PM -- March 17, 2022.
+ * Project: @t99/http
+ */
+
 /**
  * The type of function that is capable of taking in any type of data and returning a string that can be sent via
  * HTTP

@@ -1,10 +1,21 @@
+/*
+ * Created by Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/).
+ * 4:05 PM -- March 17, 2022.
+ * Project: @t99/http
+ */
 
 /**
  * An enumeration of valid HTTP status codes.
+ * 
+ * @author Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/)
+ * @version v0.1.0
+ * @since v0.1.0
  */
 export class HTTPStatusCode {
 	
-	// DOC-ME [9/21/2021 @ 10:10 AM] Documentation is required!
+	/**
+	 * A registry of valid/official HTTP status codes that have been statically initialized on this class.
+	 */
 	protected static registry: Map<number, HTTPStatusCode> = new Map();
 	
 	/**
@@ -319,14 +330,28 @@ export class HTTPStatusCode {
 		
 	}
 	
-	// DOC-ME [9/21/2021 @ 10:10 AM] Documentation is required!
+	/**
+	 * Returns true if the provided numeric status code has a matching HTTPStatusCode object registed to this class.
+	 * 
+	 * @param {number} statusCode A numeric status code for which to look for a matching HTTPStatusCode object
+	 * registered to this class.
+	 * @returns {boolean} true if the provided numeric status code has a matching HTTPStatusCode object registed to this
+	 * class.
+	 */
 	public static hasStatusCode(statusCode: number): boolean {
 		
 		return HTTPStatusCode.registry.has(statusCode);
 		
 	}
 	
-	// DOC-ME [9/21/2021 @ 10:10 AM] Documentation is required!
+	/**
+	 * Returns the HTTPStatusCode object that matches the given numeric status code if such an object exists, otherwise
+	 * throwing an error.
+	 * 
+	 * @param {number} statusCode A numeric status code for which to return a matching HTTPStatusCode object.
+	 * @returns {HTTPStatusCode} The HTTPStatusCode object that matches the given numeric status code if such an object
+	 * exists.
+	 */
 	public static fromStatusCode(statusCode: number): HTTPStatusCode {
 		
 		if (HTTPStatusCode.hasStatusCode(statusCode)) return HTTPStatusCode.registry.get(statusCode) as HTTPStatusCode;
