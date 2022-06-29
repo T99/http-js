@@ -1,4 +1,4 @@
-# http-js
+# @t99/http
 My own personal simple HTTP request library for NodeJS - written in TypeScript.
 
 ### [Find @t99/http on NPM.](https://www.npmjs.com/package/@t99/http)

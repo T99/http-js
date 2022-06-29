@@ -1,0 +1,107 @@
+# Site Information
+site_name: T99/http-js
+site_url: https://t99.github.io/http-js/
+site_author: Trevor Sears
+site_description: Documentation for the iter-over iteration toolset.
+
+# Repository Settings
+repo_name: "@t99/http"
+repo_url: https://github.com/T99/http-js
+edit_uri: edit/master/docs/
+
+# Deployment Settings
+remote_name: origin
+remote_branch: docs
+
+# Theme Settings
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: deep-orange
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+    - scheme: default
+      primary: orange
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+  font:
+    text: Fira Sans
+    code: Fira Code
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.instant
+    - navigation.sections
+    - navigation.indexes
+    - navigation.tracking
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/T99
+      name: T99 (Trevor Sears) on GitHub
+    - icon: fontawesome/brands/npm
+      link: https://www.npmjs.com/~t99
+      name: T99 (Trevor Sears) on NPMJS
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/trevorsearsio
+      name: T99 (Trevor Sears) on Twitter
+    - icon: octicons/browser-24
+      link: https://trevorsears.com/
+
+# Additional CSS Files
+extra_css:
+  - assets/docs.css
+
+# Markdown Extensions
+markdown_extensions:
+  - abbr
+  - admonition
+  - meta
+  - pymdownx.highlight:
+      linenums: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.snippets
+  - pymdownx.tabbed
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - toc:
+      permalink: true
+
+nav:
+  - "@t99/http":
+      - Overview: index.md
+  - The Basics:
+    - Overview: basics/index.md
+    - Guides:
+      - Creating a Color Iterator: basics/guides/creating-a-color-iterator.md
+      - Iterating Over Promises: basics/guides/iterating-over-promises.md
+      - Advanced Iterator Capabilities: basics/guides/advanced-iterator-capabilities.md
+  - Utility Classes:
+    - Overview: basics/utility-classes/index.md
+    - ArrayIterator: basics/utility-classes/array-iterator.md
+    - AsyncIterator: basics/utility-classes/async-iterator.md
+    - EmptyIterator: basics/utility-classes/empty-iterator.md
+    - ObjectIterator: basics/utility-classes/object-iterator.md
+    - StringCharacterIterator: basics/utility-classes/string-character-iterator.md
+    - StringLineIterator: basics/utility-classes/string-line-iterator.md
+  - Reference:
+    - Overview: reference/index.md
+    - Core:
+      - IIterator: reference/core/i-iterator.md
+      - AbstractIterator: reference/core/abstract-iterator.md
+    - Utility Classes:
+      - ArrayIterator: reference/utility-classes/array-iterator.md
+      - AsyncIterator: reference/utility-classes/async-iterator.md
+      - EmptyIterator: reference/utility-classes/empty-iterator.md
+      - ObjectIterator: reference/utility-classes/object-iterator.md
+      - StringCharacterIterator: reference/utility-classes/string-character-iterator.md
+      - StringLineIterator: reference/utility-classes/string-line-iterator.md
