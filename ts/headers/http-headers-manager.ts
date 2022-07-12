@@ -7,8 +7,8 @@ import { HTTPCookiesHeaderManager } from "./fields/http-cookies-header-manager";
 export type FieldTransformer = (field: string) => string;
 
 /**
- * An object whose fields are each valid HTTP header fields, each field having the values assigned to the HTTP header
- * field.
+ * An object whose fields are each valid HTTP header fields, each field having
+ * the values assigned to the HTTP header field.
  *
  * For example:
  * <pre>
@@ -24,86 +24,86 @@ export type FieldTransformer = (field: string) => string;
  * }
  * </pre>
  */
-export type HTTPHeaders = {
+export type HTTPHeaders = Record<string, {
+		
+	/**
+	 * This is the original, un-transformed fields, as received directly from
+	 * the client.
+	 *
+	 * Each element of this array matches to it's respective value in the
+	 * 'values' array.
+	 */
+	originalFields: string[];
 	
 	/**
-	 * Each field corresponds to an HTTP header field (i.e. 'Accept-Encoding').
+	 * An array of the values for this HTTP header field.
 	 *
-	 * This field may be modified for the purpose of standardization (for lookup purposes), for example, all incoming
-	 * headers are converted to lower-case before being stored here.
+	 * Each element of the array represents the string provided for exactly one
+	 * header included on a given HTTP message. For example, the following
+	 * headers:
+	 * 
+	 * <pre>
+	 * Accept: image/png, image/webp
+	 * accept: image/jpg
+	 * </pre>
+	 *
+	 * Should result in the following HTTPHeaders object:
+	 * <pre>
+	 * {
+	 *     "accept": {
+	 *         originalFields: ["Accept", "accept"],
+	 *         values: ["image/png, image/webp", "image/jpg"]
+	 *     }
+	 * }
+	 * </pre>
 	 */
-	[field: string]: {
-		
-		/**
-		 * This is the original, un-transformed fields, as received directly from the client.
-		 *
-		 * Each element of this array matches to it's respective value in the 'values' array.
-		 */
-		originalFields: string[],
-		
-		/**
-		 * An array of the values for this HTTP header field.
-		 *
-		 * Each element of the array represents the string provided for exactly one header included on a given HTTP
-		 * message. For example, the following headers:
-		 * <pre>
-		 * Accept: image/png, image/webp
-		 * accept: image/jpg
-		 * </pre>
-		 *
-		 * Should result in the following HTTPHeaders object:
-		 * <pre>
-		 * {
-		 *     "accept": {
-		 *         originalFields: ["Accept", "accept"],
-		 *         values: ["image/png, image/webp", "image/jpg"]
-		 *     }
-		 * }
-		 * </pre>
-		 */
-		values: string[]
-		
-	}
+	values: string[];
 	
-};
+}>;
 
 /**
- * A user-friendly version of the HTTPHeaders type that allows for more flexibility during the initialization of
- * HTTPHeadersManager instances.
+ * A user-friendly version of the HTTPHeaders type that allows for more
+ * flexibility during the initialization of HTTPHeadersManager instances.
  */
-export type ParseableHTTPHeaders = {
+export type ParseableHTTPHeaders = Record<string, string | string[] | {
+		
+	originalFields?: string | string[];
 	
-	[field: string]: string | string[] | {
-		
-		originalFields?: string | string[],
-		
-		values: string | string[]
-		
-	};
+	values: string | string[];
 	
-};
+}>;
 
 // DOC-ME [9/20/2021 @ 4:48 PM] Documentation is required!
 export class HTTPHeadersManager {
 	
 	/**
-	 * A function that transforms HTTP header field names from whatever form/case they are in, to 'Title Case'.
+	 * A function that transforms HTTP header field names from whatever
+	 * form/case they are in, to 'Title Case'.
 	 *
 	 * Example:
 	 * <pre>
-	 *     TITLE_CASE_FIELD_TRANSFORMER("content-security-policy") --> "Content-Security-Policy"
+	 *     TITLE_CASE_FIELD_TRANSFORMER("content-security-policy") -->
+	 *         "Content-Security-Policy"
 	 * </pre>
 	 *
-	 * @param {string} field The HTTP header field name to transform to 'Title Case'.
+	 * @param {string} field The HTTP header field name to transform to 'Title
+	 * Case'.
 	 * @returns {string} The 'Title Case' transformed input string.
 	 */
-	public static readonly TITLE_CASE_FIELD_TRANSFORMER: FieldTransformer = (field: string): string => {
-		
-		return field.split("-").map((component: string): string => {
-			return component.charAt(0).toUpperCase() + component.substring(1).toLowerCase();
-		}).join("-");
-		
-	};
+	public static readonly TITLE_CASE_FIELD_TRANSFORMER: FieldTransformer =
+		(field: string): string => {
+			
+			let words: string[] = field.split("-");
+			
+			words = words.map(
+				(component: string): string =>
+					component.charAt(0).toUpperCase() +
+					component.substring(1).toLowerCase()
+			);
+			
+			return words.join("-");
+			
+		};
 	
 	// DOC-ME [9/20/2021 @ 4:48 PM] Documentation is required!
 	public static readonly LOWER_CASE_FIELD_TRANSFORMER: FieldTransformer =

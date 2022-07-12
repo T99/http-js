@@ -1,8 +1,8 @@
-import { HTTPHeadersManager } from "../http-headers-manager";
+import type { HTTPHeadersManager } from "../http-headers-manager";
 import {
-	GenericQualityWeightedValue,
+	type GenericQualityWeightedValue,
+	type QualityWeightedValue,
 	HTTPQualityWeightedHeader,
-	QualityWeightedValue
 } from "./http-quality-weighted-header";
 
 /**
@@ -10,14 +10,15 @@ import {
  */
 type MIMEType = {
 	
-	mimePrimaryType: string,
+	mimePrimaryType: string;
 	
-	mimeSecondaryType: string
+	mimeSecondaryType: string;
 	
 };
 
 /**
- * Represents the pertinent information stored in a single 'Accept' header value.
+ * Represents the pertinent information stored in a single 'Accept' header
+ * value.
  *
  * For the following raw 'Accept' header value:
  * <pre>
@@ -36,7 +37,8 @@ type MIMEType = {
 export type AcceptHeaderValue = MIMEType & QualityWeightedValue;
 
 /**
- * A class that seeks to encapsulate much of the interfacing logic with the HTTP 'Accept' header and its values.
+ * A class that seeks to encapsulate much of the interfacing logic with the HTTP
+ * 'Accept' header and its values.
  * 
  * @author Trevor Sears <trevor@trevorsears.com> (https://trevorsears.com/)
  * @version v0.1.0
@@ -45,26 +47,32 @@ export type AcceptHeaderValue = MIMEType & QualityWeightedValue;
 export class HTTPAcceptHeaderManager extends HTTPQualityWeightedHeader {
 	
 	/**
-	 * Initializes a new HTTPAcceptHeaderManager instance, off of the specified {@link HTTPHeadersManager}, and
-	 * optionally using 'all headers', as opposed to solely referencing the 'authoritative' 'Accept' header.
+	 * Initializes a new HTTPAcceptHeaderManager instance, off of the specified
+	 * {@link HTTPHeadersManager}, and optionally using 'all headers', as
+	 * opposed to solely referencing the 'authoritative' 'Accept' header.
 	 * 
-	 * @param {HTTPHeadersManager} headersManager The {@link HTTPHeadersManager} from which the 'Accept' header should
-	 * be read.
-	 * @param {boolean} useAllHeaders Whether or not all 'Accept' headers should be used, or if the 'authoritative'
-	 * header should be used. Defaults to 'false', which causes the 'authoritative' header to be used.
+	 * @param {HTTPHeadersManager} headersManager The {@link HTTPHeadersManager}
+	 * from which the 'Accept' header should be read.
+	 * @param {boolean} useAllHeaders Whether or not all 'Accept' headers should
+	 * be used, or if the 'authoritative' header should be used. Defaults to
+	 * 'false', which causes the 'authoritative' header to be used.
 	 * @see HTTPHeadersManager#getAuthoritativeHeader
 	 */
-	public constructor(headersManager: HTTPHeadersManager, useAllHeaders: boolean = false) {
+	public constructor(headersManager: HTTPHeadersManager,
+					   useAllHeaders: boolean = false) {
 		
 		super("Accept", headersManager, useAllHeaders);
 		
 	}
 	
 	/**
-	 * Returns a regular expression that has been created to match strings that represent the given MIME type.
+	 * Returns a regular expression that has been created to match strings that
+	 * represent the given MIME type.
 	 * 
-	 * @param {MIMEType} mimeType The MIME type for which to create and return a regular expression.
-	 * @returns {RegExp} A regular expression that matches strings representative of the given MIME type.
+	 * @param {MIMEType} mimeType The MIME type for which to create and return a
+	 * regular expression.
+	 * @returns {RegExp} A regular expression that matches strings
+	 * representative of the given MIME type.
 	 */
 	protected static getRegexForMIMEType(mimeType: MIMEType): RegExp {
 		
@@ -76,22 +84,25 @@ export class HTTPAcceptHeaderManager extends HTTPQualityWeightedHeader {
 		regexString += (mimeType.mimeSecondaryType === "*" ? ".+" : mimeType.mimeSecondaryType);
 		regexString += "$";
 		
-		return new RegExp(regexString);
+		return new RegExp(regexString, "u");
 		
 	}
 	
 	/**
-	 * Returns true if the provided value is a MIME type matching one of the acceptable formats specified by the
-	 * 'Accept' header.
+	 * Returns true if the provided value is a MIME type matching one of the
+	 * acceptable formats specified by the 'Accept' header.
 	 * 
-	 * @param {string} mimeString A string representation of the MIME type for which to determine its acceptability.
-	 * @returns {boolean} true if the provided value is a MIME type matching one of the acceptable formats specified by
-	 * the 'Accept' header. 
+	 * @param {string} mimeString A string representation of the MIME type for
+	 * which to determine its acceptability.
+	 * @returns {boolean} true if the provided value is a MIME type matching one
+	 * of the acceptable formats specified by the 'Accept' header. 
 	 */
 	public accepts(mimeString: string): boolean {
 		
 		return this.getAcceptedValues().some(
-			(value: AcceptHeaderValue): boolean => HTTPAcceptHeaderManager.getRegexForMIMEType(value).test(mimeString)
+			(value: AcceptHeaderValue): boolean =>
+				HTTPAcceptHeaderManager.getRegexForMIMEType(value)
+					.test(mimeString)
 		);
 		
 	}

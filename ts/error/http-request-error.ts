@@ -1,4 +1,4 @@
-import { HTTPRequest } from "../messages/request/http-request";
+import type { HTTPRequest } from "../messages/request/http-request";
 
 export class HTTPRequestError extends Error {
 	
@@ -13,13 +13,17 @@ export class HTTPRequestError extends Error {
 	protected parentError?: Error;
 	
 	/**
-	 * Initializes a new RequestError instance for the specified originating request and optional message.
+	 * Initializes a new RequestError instance for the specified originating
+	 * request and optional message.
 	 *
-	 * @param {HTTPRequest} originatingRequest The HTTP request that generated this error.
+	 * @param {HTTPRequest} originatingRequest The HTTP request that generated
+	 * this error.
 	 * @param {string} message An optional message describing the error.
-	 * @param {Error} parentError The Error that lead to the creation of this Error instance.
+	 * @param {Error} parentError The Error that lead to the creation of this
+	 * Error instance.
 	 */
-	public constructor(originatingRequest: HTTPRequest, message?: string, parentError?: Error) {
+	public constructor(originatingRequest: HTTPRequest, message?: string,
+					   parentError?: Error) {
 		
 		super(message);
 		
@@ -40,11 +44,11 @@ export class HTTPRequestError extends Error {
 	}
 	
 	/**
-	 * Returns the Error that lead to the creation of this Error instance if such an Error exists, otherwise returning
-	 * undefined.
+	 * Returns the Error that lead to the creation of this Error instance if
+	 * such an Error exists, otherwise returning undefined.
 	 *
-	 * @returns {Error} The Error that lead to the creation of this Error instance if such an Error exists, otherwise
-	 * returning undefined.
+	 * @returns {Error} The Error that lead to the creation of this Error
+	 * instance if such an Error exists, otherwise returning undefined.
 	 */
 	public getParentError(): Error | undefined {
 		
