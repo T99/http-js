@@ -23,8 +23,7 @@
 	},
 	"homepage": "https://github.com/T99/http-js#readme",
 	"devDependencies": {
-		"typescript": "latest",
-		"tslint": "latest",
+		"@t99/eslint-config": "latest",
 		"@types/jest": "latest",
 		"del": "latest",
 		"gulp": "latest",
@@ -32,6 +31,8 @@
 		"gulp-typescript": "latest",
 		"gulp-uglify-es": "latest",
 		"jest": "latest",
-		"ts-jest": "latest"
+		"ts-jest": "latest",
+		"tslint": "latest",
+		"typescript": "latest"
 	}
 }
