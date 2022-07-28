@@ -79,9 +79,15 @@ export class HTTPAcceptHeaderManager extends HTTPQualityWeightedHeader {
 		let regexString: string = "";
 		
 		regexString += "^";
-		regexString += (mimeType.mimePrimaryType === "*" ? ".+" : mimeType.mimePrimaryType);
+		
+		if (mimeType.mimePrimaryType === "*") regexString += ".+";
+		else regexString += mimeType.mimePrimaryType;
+		
 		regexString += "/";
-		regexString += (mimeType.mimeSecondaryType === "*" ? ".+" : mimeType.mimeSecondaryType);
+		
+		if (mimeType.mimeSecondaryType === "*") regexString += ".+";
+		else regexString += mimeType.mimeSecondaryType;
+		
 		regexString += "$";
 		
 		return new RegExp(regexString, "u");
@@ -108,33 +114,36 @@ export class HTTPAcceptHeaderManager extends HTTPQualityWeightedHeader {
 	}
 	
 	/**
-	 * Returns the quality factor of the provided MIME type, as indicated by the 'Accept' header.
+	 * Returns the quality factor of the provided MIME type, as indicated by the
+	 * 'Accept' header.
 	 * 
 	 * A quality of zero means that the given MIME type is not acceptable.
 	 * 
-	 * @param {string} mimeString A string representation of the MIME type for which to determine its quality factor.
+	 * @param {string} mimeString A string representation of the MIME type for
+	 * which to determine its quality factor.
 	 * @returns {number} The quality factor of the specified MIME type.
 	 */
 	public getMIMETypeQuality(mimeString: string): number {
 		
 		return this.getAcceptedValues().find(
-			(value: AcceptHeaderValue): boolean => HTTPAcceptHeaderManager.getRegexForMIMEType(value).test(mimeString)
+			(value: AcceptHeaderValue): boolean =>
+				HTTPAcceptHeaderManager.getRegexForMIMEType(value)
+					.test(mimeString)
 		)?.relativeQualityFactor ?? 0;
 		
 	}
 	
 	/**
-	 * Filters the input array of MIME strings down to those that are 'supported'/'acceptable' as indicated by the
-	 * associated header, returning an array that represents the intersection between the two sets.
+	 * Filters the input array of MIME strings down to those that are
+	 * 'supported'/'acceptable' as indicated by the associated header, returning
+	 * an array that represents the intersection between the two sets.
 	 * 
-	 * This function's return value is stable to the input array - in other words, if a given format is specified before
-	 * another format in the input array, and both formats are acceptable, matches to the earlier format will show up
-	 * before matches to the later format in the output array.
+	 * This function's return value is stable to the input array - in other
+	 * words, if a given format is specified before another format in the input
+	 * array, and both formats are acceptable, matches to the earlier format
+	 * will show up before matches to the later format in the output array.
 	 * 
-	 * @param {string[]} mimeStrings An array of strings representing the formats supported by the caller. Each
-	 * element should reference a valid MIME type as specified by
-	 * <a href="https://tools.ietf.org/html/rfc6838">RFC 6838</a> and listed on
-	 * <a href="https://www.iana.org/assignments/media-types/media-types.xhtml">the IANA's 'Media Types' page</a>.
+	 * @param {string[]} mimeStrings An array of strings representing the formats supported by the caller. Each element should reference a valid MIME type as specified by <a href="https://tools.ietf.org/html/rfc6838">RFC 6838</a> and listed on <a href="https://www.iana.org/assignments/media-types/media-types.xhtml">the IANA's 'Media Types' page</a>.
 	 * @return {string[]} An array that represents the intersection between the input set, and the set of MIME types
 	 * represented by the associated header.
 	 */
@@ -197,13 +206,21 @@ export class HTTPAcceptHeaderManager extends HTTPQualityWeightedHeader {
 				
 				return {
 					
-					mimePrimaryType: genericValue.value.substring(0, separatorIndex),
-					mimeSecondaryType: genericValue.value.substring(separatorIndex + 1),
-					relativeQualityFactor: genericValue.relativeQualityFactor
+					mimePrimaryType:
+						genericValue.value.substring(0, separatorIndex),
 					
-				}
+					mimeSecondaryType:
+						genericValue.value.substring(separatorIndex + 1),
+					
+					relativeQualityFactor:
+						genericValue.relativeQualityFactor
+					
+				};
 				
-			}).filter((value: any): boolean => value !== undefined) as AcceptHeaderValue[];
+			})
+			.filter(
+				(value: any): boolean => value !== undefined
+			) as AcceptHeaderValue[];
 		
 	}
 	

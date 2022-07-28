@@ -1,8 +1,11 @@
-import { HTTPCookie, stringifyCookie } from "../../parsing/cookie-parsing";
-import { HTTPHeadersManager } from "../http-headers-manager";
+import { type HTTPCookie, stringifyCookie } from "../../parsing/cookie-parsing";
+import type { HTTPHeadersManager } from "../http-headers-manager";
 
-function trimString(str: string): string { return str.trim(); }
-function notEmpty(str: string): boolean { return str.length !== 0; }
+const trimString: (str: string) => string =
+	(str: string): string => str.trim();
+
+const notEmpty: (str: string) => boolean =
+	(str: string): boolean => str.length !== 0;
 
 export class HTTPCookiesHeaderManager {
 	
@@ -14,15 +17,13 @@ export class HTTPCookiesHeaderManager {
 		
 	}
 	
-	/**
-	 * Adds the provided 
-	 * @param {HTTPCookie} cookie
-	 */
 	public setCookie(cookie: HTTPCookie): void;
 	
-	public setCookie(name: string, value: string, settings?: Partial<HTTPCookie>): void;
+	public setCookie(name: string, value: string,
+					 settings?: Partial<HTTPCookie>): void;
 	
-	public setCookie(cookieOrName: HTTPCookie | string, value?: string, settings?: Partial<HTTPCookie>): void {
+	public setCookie(cookieOrName: HTTPCookie | string, value?: string,
+					 settings?: Partial<HTTPCookie>): void {
 		
 		let cookie: HTTPCookie;
 		
@@ -31,28 +32,32 @@ export class HTTPCookiesHeaderManager {
 			
 			cookie = {
 				name: cookieOrName as string,
-				value: value,
+				value,
 				secure: false,
 				httpOnly: false,
-				...settings
+				...settings,
 			};
 			
 		}
 		
-		this.headersManager.appendHeader("Set-Cookie", stringifyCookie(cookie));
+		this.headersManager.appendHeader(
+			"Set-Cookie",
+			stringifyCookie(cookie)
+		);
 		
 	}
 	
 	public hasCookie(name: string): boolean {
 		
-		// Node pre-processes cookies into a single header field, so we only ever have to worry about the first index.
-		let cookies: string[] =
+		// Node pre-processes cookies into a single header field, so we only
+		// ever have to worry about the first index.
+		const cookies: string[] =
 			(this.headersManager.getHeader("Cookie") ?? [""])[0]
 				.split(";")
 				.map(trimString)
 				.filter(notEmpty);
 		
-		let cookieNames: string[] = cookies.map(
+		const cookieNames: string[] = cookies.map(
 			(cookie: string): string => cookie.split("=", 2)[0]?.trim() ?? ""
 		).filter(notEmpty);
 		
@@ -62,29 +67,25 @@ export class HTTPCookiesHeaderManager {
 	
 	public getCookie(name: string): string | undefined {
 		
-		let cookies: string[] =
-			(this.headersManager.getHeader("Cookie") ?? [""])[0]
-				.split(";")
-				.map(trimString)
-				.filter(notEmpty);
-		
-		for (let cookie of cookies) {
-			
-			let cookieComponents: [string, string] = cookie.split("=", 2).map(trimString) as [string, string];
-			
-			if (cookieComponents[0] === name) return cookieComponents[1];
-			
-		}
-		
-		return undefined;
+		return (this.headersManager.getHeader("Cookie") ?? [""])[0]
+			.split(";")
+			.map(trimString)
+			.filter(notEmpty)
+			.map((cookie: string): [string, string] =>
+				cookie.split("=", 2).map(trimString) as [string, string])
+			.find((cookieComponents: [string, string]): boolean =>
+				cookieComponents[0] === name)
+			?.at(1);
 		
 	}
 	
 	/**
-	 * Attempts to instruct the client to 'unset' a given cookie (specified by the caller) by re-setting the cookie with
-	 * an 'expires' date in the distant past.
+	 * Attempts to instruct the client to 'unset' a given cookie (specified by
+	 * the caller) by re-setting the cookie with an 'expires' date in the
+	 * distant past.
 	 * 
-	 * @param {string} name The name/identifier of the cookie that should be unset.
+	 * @param {string} name The name/identifier of the cookie that should be
+	 * unset.
 	 */
 	public unsetCookie(name: string): void {
 		
@@ -93,7 +94,7 @@ export class HTTPCookiesHeaderManager {
 			value: "",
 			secure: false,
 			httpOnly: false,
-			expires: new Date(0)
+			expires: new Date(0),
 		}));
 		
 	}

@@ -1,15 +1,15 @@
-import { HTTPHeadersManager } from "../http-headers-manager";
-import { HTTPHeaderField } from "../../schema/http-headers";
+import type { HTTPHeadersManager } from "../http-headers-manager";
+import type { HTTPHeaderField } from "../../schema/http-headers";
 
 export type QualityWeightedValue = {
 	
-	relativeQualityFactor: number
+	relativeQualityFactor: number;
 	
 };
 
 export type GenericQualityWeightedValue = QualityWeightedValue & {
 	
-	value: string
+	value: string;
 	
 };
 
@@ -21,9 +21,12 @@ export class HTTPQualityWeightedHeader {
 	
 	protected useAllHeaders: boolean;
 	
-	public constructor(header: HTTPHeaderField, headersManager: HTTPHeadersManager, useAllHeaders: boolean = false) {
+	public constructor(header: HTTPHeaderField,
+					   headersManager: HTTPHeadersManager,
+					   useAllHeaders: boolean = false) {
 		
-		// TODO [7/28/21 @ 8:47 PM] Generify this method - other headers also use the 'q' parameter.
+		// TODO [7/28/21 @ 8:47 PM] Generify this method - other headers also
+		//  use the 'q' parameter.
 		
 		this.headerField = header;
 		this.headersManager = headersManager;
@@ -31,32 +34,47 @@ export class HTTPQualityWeightedHeader {
 		
 	}
 	
-	public static parseQualityWeightedValue(value: string): GenericQualityWeightedValue {
+	public static parseQualityWeightedValue(
+		value: string): GenericQualityWeightedValue {
 		
-		let semicolonIndex: number = value.lastIndexOf(";");
+		const semicolonIndex: number = value.lastIndexOf(";");
 		
-		if (semicolonIndex === -1) return { value, relativeQualityFactor: 1 };
+		if (semicolonIndex === -1) {
+			
+			return {
+				value,
+				relativeQualityFactor: 1,
+			};
+			
+		}
 		
-		let qualityValueRegexMatch: RegExpMatchArray | null =
-			value.substring(semicolonIndex + 1).match(/\d+(?:\.(?:\d+)?)?/);
+		const qualityValueRegexMatch: RegExpMatchArray | null =
+			/\d+(?:\.(?:\d+)?)?/u.exec(value.substring(semicolonIndex + 1));
 		
-		if (qualityValueRegexMatch === null) return { value, relativeQualityFactor: 1 }
-		else {
+		if (qualityValueRegexMatch === null) {
+			
+			return {
+				value,
+				relativeQualityFactor: 1,
+			};
+			
+		} else {
 			
 			return {
 				value: value.substring(0, semicolonIndex),
-				relativeQualityFactor: parseFloat(qualityValueRegexMatch[0])
+				relativeQualityFactor: parseFloat(qualityValueRegexMatch[0]),
 			};
 			
 		}
 		
 	}
 	
-	public static parseQualityWeightedValueList(valueList: string): GenericQualityWeightedValue[] {
+	public static parseQualityWeightedValueList(
+		valueList: string): GenericQualityWeightedValue[] {
 		
 		return valueList
 			.trim()
-			.split(/,\s*/)
+			.split(/,\s*/u)
 			.map(HTTPQualityWeightedHeader.parseQualityWeightedValue);
 		
 	}
@@ -64,33 +82,35 @@ export class HTTPQualityWeightedHeader {
 	protected getQualityWeightedValues(): GenericQualityWeightedValue[] {
 		
 		if (!this.headersManager.hasHeader(this.headerField)) return [];
-		else {
+		
+		let result: GenericQualityWeightedValue[];
+		
+		if (this.useAllHeaders) {
 			
-			let result: GenericQualityWeightedValue[];
+			result = this.headersManager.getHeader(this.headerField)
+				?.map(
+					HTTPQualityWeightedHeader.parseQualityWeightedValueList
+				)?.flat() ?? [];
 			
-			if (!this.useAllHeaders) {
-				
-				result = HTTPQualityWeightedHeader.parseQualityWeightedValueList(
-					this.headersManager.getAuthoritativeHeader(this.headerField) as string
+		} else {
+			
+			result =
+				HTTPQualityWeightedHeader.parseQualityWeightedValueList(
+					this.headersManager.getAuthoritativeHeader(
+						this.headerField
+					) as string
 				);
-				
-			} else {
-				
-				result = this.headersManager.getHeader(this.headerField)
-					?.map(HTTPQualityWeightedHeader.parseQualityWeightedValueList)
-					?.flat() ?? [];
-				
-			}
-			
-			result.sort((element1: QualityWeightedValue, element2: QualityWeightedValue): number => {
-				
-				return element2.relativeQualityFactor - element1.relativeQualityFactor;
-				
-			});
-			
-			return result;
 			
 		}
+		
+		result.sort(
+			(element1: QualityWeightedValue,
+			 element2: QualityWeightedValue): number =>
+				element2.relativeQualityFactor -
+				element1.relativeQualityFactor
+		);
+		
+		return result;
 		
 	}
 	
