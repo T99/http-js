@@ -1,17 +1,24 @@
 import { HTTPMethod } from "../../schema/http-method";
-import { HTTPHeadersManager, ParseableHTTPHeaders } from "../../headers/http-headers-manager";
-import { HTTPVersionFormat, HTTPVersionObject, normalizeHTTPVersion } from "../../parsing/http-version-parsing";
+import {
+	HTTPHeadersManager,
+	type ParseableHTTPHeaders,
+} from "../../headers/http-headers-manager";
+import {
+	type HTTPVersionFormat,
+	type HTTPVersionObject,
+	normalizeHTTPVersion,
+} from "../../parsing/http-version-parsing";
 
 // DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 export type HTTPMessageConfig = {
 	
-	version?: string | number | HTTPVersionObject,
+	version?: string | number | HTTPVersionObject;
 	
-	method: string | HTTPMethod,
+	method: string | HTTPMethod;
 	
-	url: string | URL,
+	url: string | URL;
 	
-	headers?: ParseableHTTPHeaders | HTTPHeadersManager
+	headers?: ParseableHTTPHeaders | HTTPHeadersManager;
 	
 };
 
@@ -21,7 +28,7 @@ export class HTTPMessage {
 	// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
 	public static readonly DEFAULT_HTTP_VERSION: HTTPVersionObject = {
 		major: "1",
-		minor: "1"
+		minor: "1",
 	};
 	
 	// DOC-ME [9/25/21 @ 2:01 PM] Documentation required!
@@ -50,8 +57,11 @@ export class HTTPMessage {
 		if (typeof config.url === "string") this.url = new URL(config.url);
 		else this.url = config.url as URL;
 		
-		if (config.headers instanceof HTTPHeadersManager) this.headers = config.headers;
-		else this.headers = new HTTPHeadersManager(config.headers);
+		if (config.headers instanceof HTTPHeadersManager) {
+			
+			this.headers = config.headers;
+			
+		} else this.headers = new HTTPHeadersManager(config.headers);
 		
 	}
 	
@@ -61,10 +71,13 @@ export class HTTPMessage {
 	 * "major": Returns 'x' for versions of the form 'x.y'.<br />
 	 * "minor": Returns 'y' for versions of the form 'x.y'.<br />
 	 * "full": Returns 'x.y' for versions of the form 'x.y'.<br />
-	 * "object": Returns an HTTPVersionObject object containing 'major' and 'minor' properties.
+	 * "object": Returns an HTTPVersionObject object containing 'major' and
+	 * 'minor' properties.
 	 *
-	 * @param {"object"} format The format in which to return the HTTP version of this HTTP message.
-	 * @returns {HTTPVersionObject} The HTTP version of this HTTP message in the requested format.
+	 * @param {"object"} format The format in which to return the HTTP version
+	 * of this HTTP message.
+	 * @returns {HTTPVersionObject} The HTTP version of this HTTP message in the
+	 * requested format.
 	 */
 	public getHTTPVersion(format?: "object"): HTTPVersionObject;
 	
@@ -74,23 +87,30 @@ export class HTTPMessage {
 	 * "major": Returns 'x' for versions of the form 'x.y'.<br />
 	 * "minor": Returns 'y' for versions of the form 'x.y'.<br />
 	 * "full": Returns 'x.y' for versions of the form 'x.y'.<br />
-	 * "object": Returns an HTTPVersionObject object containing 'major' and 'minor' properties.
+	 * "object": Returns an HTTPVersionObject object containing 'major' and
+	 * 'minor' properties.
 	 *
-	 * @param {"major" | "minor" | "full"} format The format in which to return the HTTP version of this HTTP message.
-	 * @returns {string} The HTTP version of this HTTP message in the requested format.
+	 * @param {"major" | "minor" | "full"} format The format in which to return
+	 * the HTTP version of this HTTP message.
+	 * @returns {string} The HTTP version of this HTTP message in the requested
+	 * format.
 	 */
 	public getHTTPVersion(format: "major" | "minor" | "full"): string;
 	
-	public getHTTPVersion(format?: HTTPVersionFormat): string | HTTPVersionObject {
+	public getHTTPVersion(
+		format?: HTTPVersionFormat): string | HTTPVersionObject {
 		
 		if (format === "major") return this.version.major;
 		else if (format === "minor") return this.version.minor;
-		else if (format === "full") return `${this.version.minor}.${this.version.minor}`;
-		else {
+		else if (format === "full") {
+			
+			return `${this.version.minor}.${this.version.minor}`;
+			
+		} else {
 			
 			return {
 				major: this.version.major,
-				minor: this.version.minor
+				minor: this.version.minor,
 			};
 			
 		}
@@ -106,7 +126,7 @@ export class HTTPMessage {
 	/**
 	 * Returns the HTTP method for this HTTP message.
 	 *
-	 * @return {HTTPMethod} The HTTP method for this HTTP message.
+	 * @returns {HTTPMethod} The HTTP method for this HTTP message.
 	 */
 	public getMethod(): HTTPMethod {
 		
@@ -123,7 +143,7 @@ export class HTTPMessage {
 	/**
 	 * Returns the URL for this HTTP message.
 	 *
-	 * @return {URL} The URL for this HTTP message.
+	 * @returns {URL} The URL for this HTTP message.
 	 */
 	public getURL(): URL {
 		

@@ -21,8 +21,11 @@ export class HTTPResponse extends HTTPMessage {
 		
 		super(config);
 		
-		if (typeof config.statusCode === "number") this.statusCode = HTTPStatusCode.fromStatusCode(config.statusCode);
-		else this.statusCode = config.statusCode;
+		if (typeof config.statusCode === "number") {
+			
+			this.statusCode = HTTPStatusCode.fromStatusCode(config.statusCode);
+			
+		} else this.statusCode = config.statusCode;
 		
 	}
 	
@@ -52,8 +55,11 @@ export class HTTPResponse extends HTTPMessage {
 	
 	public setStatusCode(statusCode: number | HTTPStatusCode): void {
 		
-		if (typeof statusCode === "number") this.statusCode = HTTPStatusCode.fromStatusCode(statusCode);
-		else this.statusCode = statusCode;
+		if (typeof statusCode === "number") {
+			
+			this.statusCode = HTTPStatusCode.fromStatusCode(statusCode);
+			
+		} else this.statusCode = statusCode;
 		
 	}
 	

@@ -1,4 +1,8 @@
-export type StringMIMEType = string
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents,
+                  id-length */
+
+export type StringMIMEType =
+	| string
 	| "application/json"
 	| "application/octet-stream"
 	| "application/ogg"
@@ -30,7 +34,7 @@ export type StringMIMEType = string
 	| "video/webm";
 
 export type PreloadType =
-	  "audio"
+	| "audio"
 	| "document"
 	| "embed"
 	| "fetch"
@@ -43,59 +47,53 @@ export type PreloadType =
 	| "worker"
 	| "video";
 
-type ExtensionMapType = {
-	
-	[fileExtension: string]: {
-		
-		contentType: StringMIMEType,
-		preloadType: PreloadType
-		
-	}
-	
-};
+type ExtensionMapType = Record<string, {
+	contentType: StringMIMEType;
+	preloadType: PreloadType;
+}>;
 
 export const EXTENSION_MAP: ExtensionMapType = {
 	
-	"html": {
+	html: {
 		contentType: "text/html",
-		preloadType: "document"
+		preloadType: "document",
 	},
-	"css": {
+	css: {
 		contentType: "text/css",
-		preloadType: "style"
+		preloadType: "style",
 	},
-	"js": {
+	js: {
 		contentType: "text/javascript",
-		preloadType: "script"
+		preloadType: "script",
 	},
-	"jpg": {
+	jpg: {
 		contentType: "image/jpeg",
 		preloadType: "image",
 	},
-	"jpeg": {
+	jpeg: {
 		contentType: "image/jpeg",
 		preloadType: "image",
 	},
-	"png": {
+	png: {
 		contentType: "image/png",
-		preloadType: "image"
+		preloadType: "image",
 	},
-	"ico": {
+	ico: {
 		contentType: "image/x-icon",
-		preloadType: "image"
+		preloadType: "image",
 	},
-	"gif": {
+	gif: {
 		contentType: "image/gif",
-		preloadType: "image"
+		preloadType: "image",
 	},
-	"svg": {
+	svg: {
 		contentType: "image/svg+xml",
-		preloadType: "image"
+		preloadType: "image",
 	},
-	"mp4": {
+	mp4: {
 		contentType: "image/mp4",
-		preloadType: "video"
-	}
+		preloadType: "video",
+	},
 	
 };
 
@@ -125,8 +123,10 @@ export class MIMETypeUtilities {
 			
 			return "text/plain";
 			
-			// throw new Error(`Attempted to guess MIME/Content-Type of file: '${path}', but did not recognize ` +
-			// 	`extension '${fileExtension}'.`);
+			// throw new Error(
+			// `Attempted to guess MIME/Content-Type of file: '${path}', ` +
+			// `but did not recognize extension '${fileExtension}'.`
+			// );
 			
 		}
 		

@@ -35,111 +35,124 @@ export type HTTPCookie = {
 };
 
 /**
- * A regular expression that matches the 'name' part of a textual HTTP cookie. The first capture group matches the
- * cookie's name, while the second capture group matches the remaining part of the cookie after the '=' separator
+ * A regular expression that matches the 'name' part of a textual HTTP cookie.
+ * The first capture group matches the cookie's name, while the second capture
+ * group matches the remaining part of the cookie after the '=' separator
  * between the cookie name and cookie value.
  */
-const COOKIE_NAME_REGEX: RegExp = /^\s*([^\x00-\x20()<>@,;:\\"\/[\]?={}]+)\s*=\s*(.+)$/;
+const COOKIE_NAME_REGEX: RegExp =
+	/^\s*([^\x00-\x20()<>@,;:\\"\/[\]?={}]+)\s*=\s*(.+)$/;
 
 /**
- * Attempts to parse HTTP cookie information out the provided string, returning the resulting {@link HTTPCookie} object.
+ * Attempts to parse HTTP cookie information out the provided string, returning
+ * the resulting {@link HTTPCookie} object.
  * 
- * @param {string} cookie The string HTTP cookie to parse to an {@link HTTPCookie} object.
- * @returns {HTTPCookie} The resulting {@link HTTPCookie} object, as parsed from the provided string.
+ * @param {string} cookie The string HTTP cookie to parse to an
+ * {@link HTTPCookie} object.
+ * @returns {HTTPCookie} The resulting {@link HTTPCookie} object, as parsed from
+ * the provided string.
  * @throws {Error} If the provided string cannot be parsed as an HTTP cookie.
  */
 export function parseCookie(cookie: string): HTTPCookie {
 	
 	let rest: string = cookie;
 	
-	let cookieNameRegexResult: RegExpMatchArray | null = rest.match(COOKIE_NAME_REGEX);
+	const cookieNameRegexResult: RegExpMatchArray | null =
+		COOKIE_NAME_REGEX.exec(rest);
 	
 	if (cookieNameRegexResult === null) {
 		
-		throw new Error(`Failed to parse HTTP cookie name from cookie. Cookie: ${cookie}`);
+		throw new Error(
+			`Failed to parse HTTP cookie name from cookie. Cookie: ${cookie}`
+		);
 		
 	}
 	
-	let name: string = cookieNameRegexResult[1];
+	const name: string = cookieNameRegexResult[1];
+	
 	rest = cookieNameRegexResult[2];
 	
-	let value: string | undefined = undefined;
+	let cookieValue: string | undefined;
 	
-	// If the cookie value is surrounded by quotes, parse out the quoted content.
+	// If the cookie value is surrounded by quotes, parse out the quoted
+	// content.
 	if (rest.charAt(0) === "\"") {
 		
 		// Look for the closing quote.
-		let nextQuoteIndex: number = rest.indexOf("\"", 1);
+		const nextQuoteIndex: number = rest.indexOf("\"", 1);
 		
 		// If the closing quote was found...
 		if (nextQuoteIndex !== -1) {
 			
-			value = rest.substring(1, nextQuoteIndex);
+			cookieValue = rest.substring(1, nextQuoteIndex);
 			rest = rest.substring(nextQuoteIndex);
 			
 		}
 		
 	}
 		
-	if (value === undefined) {
+	if (cookieValue === undefined) {
 		
 		// Look for the closing semicolon instead.
-		let semicolonIndex: number = rest.indexOf(";", 1);
+		const semicolonIndex: number = rest.indexOf(";", 1);
 		
-		// If the closing semicolon was found...
-		if (semicolonIndex !== -1) {
+		// If the closing semicolon was NOT found...
+		if (semicolonIndex === -1) {
 			
-			value = rest.substring(0, semicolonIndex);
-			rest = rest.substring(semicolonIndex);
+			cookieValue = rest;
+			rest = "";
 			
-		// If the closing semicolon was not found...
+		// If the closing semicolon WAS found...
 		} else {
 			
-			value = rest;
-			rest = "";
+			cookieValue = rest.substring(0, semicolonIndex);
+			rest = rest.substring(semicolonIndex);
 			
 		}
 		
 	}
 	
-	let remainingPhrases: string[] = rest.split(";").map((phrase: string): string => phrase.trim());
+	const remainingPhrases: string[] =
+		rest.split(";")
+		    .map((phrase: string): string => phrase.trim());
 	
-	let expires: Date | undefined = undefined;
-	let maxAge: number | undefined = undefined;
-	let domain: string | undefined = undefined;
-	let path: string | undefined = undefined;
+	let expires: Date | undefined;
+	let maxAge: number | undefined;
+	let domain: string | undefined;
+	let path: string | undefined;
 	let secure: boolean = false;
 	let httpOnly: boolean = false;
-	let sameSite: CookieSameSiteValue | undefined = undefined;
+	let sameSite: CookieSameSiteValue | undefined;
 	
-	for (let phrase of remainingPhrases) {
+	for (const phrase of remainingPhrases) {
 		
-		let lcPhrase: string = phrase.toLowerCase();
+		const lowercasePhrase: string = phrase.toLowerCase();
 		
-		if (lcPhrase === "secure") secure = true;
-		else if (lcPhrase === "httponly") httpOnly = true;
+		if (lowercasePhrase === "secure") secure = true;
+		else if (lowercasePhrase === "httponly") httpOnly = true;
 		else {
 			
-			let keyValuePair: string[] = phrase.split("=");
+			const keyValuePair: string[] = phrase.split("=");
 			
 			if (keyValuePair.length === 2) {
 				
-				let key: string = keyValuePair[0].trim().toLowerCase();
-				let value: string = keyValuePair[1];
+				const key: string = keyValuePair[0].trim().toLowerCase();
+				let valueOfKey: string = keyValuePair[1];
 				
-				if (key === "expires") expires = new Date(value);
-				else if (key === "max-age") maxAge = parseFloat(value);
-				else if (key === "domain") domain = value;
-				else if (key === "path") path = value;
+				if (key === "expires") expires = new Date(valueOfKey);
+				else if (key === "max-age") maxAge = parseFloat(valueOfKey);
+				else if (key === "domain") domain = valueOfKey;
+				else if (key === "path") path = valueOfKey;
 				else if (key === "samesite") {
 					
-					value = value.trim().toLowerCase();
+					valueOfKey = valueOfKey.trim().toLowerCase();
 					
-					if (value === "strict") sameSite = "Strict";
-					else if (value === "lax") sameSite = "Lax";
-					else if (value === "none") sameSite = "None";
+					if (valueOfKey === "strict") sameSite = "Strict";
+					else if (valueOfKey === "lax") sameSite = "Lax";
+					else if (valueOfKey === "none") sameSite = "None";
 					
 				}
+				
 			}
 			
 		}
@@ -147,33 +160,38 @@ export function parseCookie(cookie: string): HTTPCookie {
 	}
 	
 	return {
-		
 		name,
-		value,
+		value: cookieValue,
 		expires,
 		maxAge,
 		domain,
 		path,
 		secure,
 		httpOnly,
-		sameSite
-		
+		sameSite,
 	};
 	
 }
 
 /**
- * Converts an {@link HTTPCookie} object to it's equivalent string version, returning the result.
+ * Converts an {@link HTTPCookie} object to it's equivalent string version,
+ * returning the result.
  * 
- * @param {HTTPCookie} cookie The {@link HTTPCookie} object to convert to a string.
- * @returns {string} The resulting string version of the provided {@link HTTPCookie} object.
+ * @param {HTTPCookie} cookie The {@link HTTPCookie} object to convert to a
+ * string.
+ * @returns {string} The resulting string version of the provided
+ * {@link HTTPCookie} object.
  */
 export function stringifyCookie(cookie: HTTPCookie): string {
 	
 	let result: string = `${cookie.name}=${cookie.value}`;
 	
 	if (cookie.maxAge !== undefined) result += `; Max-Age=${cookie.maxAge}`;
-	else if (cookie.expires !== undefined) result += `; Expires=${cookie.expires.toUTCString()}`;
+	else if (cookie.expires !== undefined) {
+		
+		result += `; Expires=${cookie.expires.toUTCString()}`;
+		
+	}
 	
 	if (cookie.domain !== undefined) result += `; Domain=${cookie.domain}`;
 	
@@ -183,7 +201,11 @@ export function stringifyCookie(cookie: HTTPCookie): string {
 	
 	if (cookie.httpOnly) result += `; HttpOnly`;
 	
-	if (cookie.sameSite !== undefined) result += `; SameSite=${cookie.sameSite}`;
+	if (cookie.sameSite !== undefined) {
+		
+		result += `; SameSite=${cookie.sameSite}`;
+		
+	}
 	
 	return result;
 	

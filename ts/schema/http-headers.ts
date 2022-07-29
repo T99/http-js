@@ -4,7 +4,9 @@
  * Project: @t99/http
  */
 
-export type HTTPHeaderField = 
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+
+export type HTTPHeaderField =
 	| string
 	| "Accept"
 	| "Access-Control-Allow-Credentials"

@@ -14,7 +14,8 @@
 export class HTTPMethod {
 	
 	/**
-	 * A registry of valid/official HTTP methods that have been statically initialized on this class.
+	 * A registry of valid/official HTTP methods that have been statically
+	 * initialized on this class.
 	 */
 	protected static registry: Map<string, HTTPMethod> = new Map();
 	
@@ -45,9 +46,11 @@ export class HTTPMethod {
 	
 	public static readonly MERGE: HTTPMethod = new HTTPMethod("MERGE");
 	
-	public static readonly MKACTIVITY: HTTPMethod = new HTTPMethod("MKACTIVITY");
+	public static readonly MKACTIVITY: HTTPMethod =
+		new HTTPMethod("MKACTIVITY");
 	
-	public static readonly MKCALENDAR: HTTPMethod = new HTTPMethod("MKCALENDAR");
+	public static readonly MKCALENDAR: HTTPMethod =
+		new HTTPMethod("MKCALENDAR");
 	
 	public static readonly MKCOL: HTTPMethod = new HTTPMethod("MKCOL");
 	
@@ -58,8 +61,9 @@ export class HTTPMethod {
 	public static readonly OPTIONS: HTTPMethod = new HTTPMethod("OPTIONS");
 	
 	/**
-	 * The HTTP 'PATCH' method functions similarly to the 'PUT' method, but rather than creating or replacing the target
-	 * resource, the request payload is instead used to partially modify an existing target resource.
+	 * The HTTP 'PATCH' method functions similarly to the 'PUT' method, but
+	 * rather than creating or replacing the target resource, the request
+	 * payload is instead used to partially modify an existing target resource.
 	 */
 	public static readonly PATCH: HTTPMethod = new HTTPMethod("PATCH");
 	
@@ -72,8 +76,8 @@ export class HTTPMethod {
 	public static readonly PURGE: HTTPMethod = new HTTPMethod("PURGE");
 	
 	/**
-	 * The HTTP 'PUT' method serves to either create or replace the target resource with, or based on, the payload of
-	 * the request.
+	 * The HTTP 'PUT' method serves to either create or replace the target
+	 * resource with, or based on, the payload of the request.
 	 */
 	public static readonly PUT: HTTPMethod = new HTTPMethod("PUT");
 	
@@ -86,8 +90,9 @@ export class HTTPMethod {
 	public static readonly SUBSCRIBE: HTTPMethod = new HTTPMethod("SUBSCRIBE");
 	
 	/**
-	 * The HTTP 'TRACE' method is similar in function to a network 'ping'. The original TRACE request is forwarded to
-	 * its intended destination, and then mirrored back to the origin client as the body of a 200 OK response.
+	 * The HTTP 'TRACE' method is similar in function to a network 'ping'. The
+	 * original TRACE request is forwarded to its intended destination, and then
+	 * mirrored back to the origin client as the body of a 200 OK response.
 	 */
 	public static readonly TRACE: HTTPMethod = new HTTPMethod("TRACE");
 	
@@ -97,7 +102,8 @@ export class HTTPMethod {
 	
 	public static readonly UNLOCK: HTTPMethod = new HTTPMethod("UNLOCK");
 	
-	public static readonly UNSUBSCRIBE: HTTPMethod = new HTTPMethod("UNSUBSCRIBE");
+	public static readonly UNSUBSCRIBE: HTTPMethod =
+		new HTTPMethod("UNSUBSCRIBE");
 	
 	/**
 	 * The method name for this HTTP method.
@@ -113,14 +119,25 @@ export class HTTPMethod {
 	 */
 	protected constructor(methodName: string) {
 		
-		if (HTTPMethod.registry.has(methodName)) return HTTPMethod.registry.get(methodName) as HTTPMethod;
-		else {
+		if (HTTPMethod.registry.has(methodName)) {
+			
+			return HTTPMethod.registry.get(methodName) as HTTPMethod;
+			
+		} else {
 			
 			this.methodName = methodName;
 			
 			HTTPMethod.registry.set(methodName, this);
 			
 		}
+		
+	}
+	
+	public static normalizeHTTPMethod(
+		httpMethod: string | HTTPMethod): HTTPMethod {
+		
+		if (httpMethod instanceof HTTPMethod) return httpMethod;
+		else return new HTTPMethod(httpMethod);
 		
 	}
 	
@@ -132,13 +149,6 @@ export class HTTPMethod {
 	public getName(): string {
 		
 		return this.methodName;
-		
-	}
-	
-	public static normalizeHTTPMethod(httpMethod: string | HTTPMethod): HTTPMethod {
-		
-		if (httpMethod instanceof HTTPMethod) return httpMethod;
-		else return new HTTPMethod(httpMethod);
 		
 	}
 	
