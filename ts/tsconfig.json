@@ -14,6 +14,13 @@
 		// Compiles to ES6 JS.
 		"target": "es6",
 		
+		// Adds ES2019 to the targeted library list. 
+		"lib": [
+			"DOM",
+			"es2019",
+			"es2022"
+		],
+		
 		// Generates a JS --> TS source map for easier debugging.
 		"sourceMap": true,
 		
