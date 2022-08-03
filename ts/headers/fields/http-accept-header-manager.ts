@@ -143,40 +143,50 @@ export class HTTPAcceptHeaderManager extends HTTPQualityWeightedHeader {
 	 * array, and both formats are acceptable, matches to the earlier format
 	 * will show up before matches to the later format in the output array.
 	 * 
-	 * @param {string[]} mimeStrings An array of strings representing the formats supported by the caller. Each element should reference a valid MIME type as specified by <a href="https://tools.ietf.org/html/rfc6838">RFC 6838</a> and listed on <a href="https://www.iana.org/assignments/media-types/media-types.xhtml">the IANA's 'Media Types' page</a>.
-	 * @return {string[]} An array that represents the intersection between the input set, and the set of MIME types
-	 * represented by the associated header.
+	 * @param {string[]} mimeStrings An array of strings representing the
+	 * formats supported by the caller. Each element should reference a valid
+	 * MIME type as specified by
+	 * <a href="https://tools.ietf.org/html/rfc6838">RFC 6838</a> and listed on
+	 * <a href="https://www.iana.org/assignments/media-types/media-types.xhtml">
+	 * the IANA's 'Media Types' page</a>.
+	 * @returns {string[]} An array that represents the intersection between the
+	 * input set, and the set of MIME types represented by the associated
+	 * header.
 	 */
 	public filterToSupportedMIMEs(...mimeStrings: string[]): string[] {
 		
-		// Note to self: The reason I didn't 'unroll' this function to use `#accepts` is because each call to `#accepts`
-		// results in a call to `#getAcceptedValues`, whereas this function only calls it once.
+		// Note to self: The reason I didn't 'unroll' this function to use
+		// `#accepts` is because each call to `#accepts` results in a call to
+		// `#getAcceptedValues`, whereas this function only calls it once.
 		
-		let acceptedValues: AcceptHeaderValue[] = this.getAcceptedValues();
+		const acceptedValues: AcceptHeaderValue[] = this.getAcceptedValues();
 		
-		// Filter the given MIME strings down to those for which a matching Accept value can be found.
+		// Filter the given MIME strings down to those for which a matching
+		// Accept value can be found.
 		return mimeStrings.filter((mimeString: string): boolean => {
 			
-			// If there exists some accepted value that matches the given MIME string, return true.
-			return acceptedValues.some((acceptedValue: AcceptHeaderValue): boolean => {
-				
-				// Return true if the regex generated from this Accept value matches the current MIME string.
-				return HTTPAcceptHeaderManager.getRegexForMIMEType(acceptedValue).test(mimeString);
-				
-			});
+			// If there exists some accepted value that matches the given MIME
+			// string, return true.
+			return acceptedValues.some(
+				(acceptedValue: AcceptHeaderValue): boolean =>
+					HTTPAcceptHeaderManager.getRegexForMIMEType(acceptedValue)
+						.test(mimeString)
+			);
 			
 		});
 		
 	}
 	
 	/**
-	 * Returns the MIME type that was indicated to be the 'highest quality' by the associated header.
+	 * Returns the MIME type that was indicated to be the 'highest quality' by
+	 * the associated header.
 	 * 
 	 * Example:
 	 *   Accept: text/csv;q=0.4, text/html;q=0.73, application/json;q=0.01
 	 *   getHighestQuality() --> "text/html"
 	 * 
-	 * @returns {string} The MIME type that was indicated to be the 'highest quality' by the associated header.
+	 * @returns {string} The MIME type that was indicated to be the 'highest
+	 * quality' by the associated header.
 	 */
 	public getHighestQuality(): string {
 		
@@ -191,16 +201,18 @@ export class HTTPAcceptHeaderManager extends HTTPQualityWeightedHeader {
 	}
 	
 	/**
-	 * Returns an array of 'Accept' header values, as parsed from the 'Accept' header of the associated HTTP message.
+	 * Returns an array of 'Accept' header values, as parsed from the 'Accept'
+	 * header of the associated HTTP message.
 	 * 
 	 * @returns {AcceptHeaderValue[]} An array of parsed 'Accept' header values.
 	 */
 	public getAcceptedValues(): AcceptHeaderValue[] {
 		
 		return this.getQualityWeightedValues()
-			.map((genericValue: GenericQualityWeightedValue): AcceptHeaderValue | undefined => {
+			.map((genericValue: GenericQualityWeightedValue
+				): AcceptHeaderValue | undefined => {
 			
-				let separatorIndex: number = genericValue.value.indexOf("/");
+				const separatorIndex: number = genericValue.value.indexOf("/");
 				
 				if (separatorIndex === -1) return undefined;
 				
@@ -213,13 +225,13 @@ export class HTTPAcceptHeaderManager extends HTTPQualityWeightedHeader {
 						genericValue.value.substring(separatorIndex + 1),
 					
 					relativeQualityFactor:
-						genericValue.relativeQualityFactor
+						genericValue.relativeQualityFactor,
 					
 				};
 				
 			})
 			.filter(
-				(value: any): boolean => value !== undefined
+				(value: unknown): boolean => value !== undefined
 			) as AcceptHeaderValue[];
 		
 	}
