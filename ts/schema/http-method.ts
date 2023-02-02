@@ -142,6 +142,12 @@ export class HTTPMethod {
 		
 	}
 	
+	public static isStringValidHTTPMethod(input: string): boolean {
+		
+		return true;
+		
+	}
+	
 	/**
 	 * Returns the method name for this HTTP method.
 	 *

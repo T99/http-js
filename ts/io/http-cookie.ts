@@ -46,16 +46,6 @@ export class HTTPCookie implements RawHTTPCookie {
 		
 		results.push({ key: this.name, value: this.value });
 		
-		const mapping: Record<keyof RawHTTPCookie, string> = {
-			expires: "Expires",
-			maxAge: "Max-Age",
-			domain: "Domain",
-			path: "Expires",
-			secure: "Expires",
-			httpOnly: "Expires",
-			sameSite: "Expires",
-		}
-		
 		if (this.maxAge !== undefined) {
 			
 			results.push({ key: "Max-Age", value: this.maxAge });
@@ -78,13 +68,13 @@ export class HTTPCookie implements RawHTTPCookie {
 			
 		}
 		
-		if (this.secure) result += `; Secure`;
+		if (this.secure) results.push({ key: "Secure" });
 		
-		if (this.httpOnly) result += `; HttpOnly`;
+		if (this.httpOnly) results.push({ key: "HttpOnly" });
 		
 		if (this.sameSite !== undefined) {
 			
-			result += `; SameSite=${this.sameSite}`;
+			results.push({ key: "SameSite", value: this.sameSite });
 			
 		}
 		

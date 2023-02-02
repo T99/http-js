@@ -15,9 +15,7 @@
  */
 
 // '/error/'
-export { HTTPError } from "./error/http-error";
 export { HTTPRequestError } from "./error/http-request-error";
-export { HTTPMalformedMessageError } from "./error/http-malformed-message-error";
 
 // '/headers/'
 export {

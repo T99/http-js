@@ -5,11 +5,9 @@
  */
 
 /**
- * The type of function that is capable of taking in any type of data and returning a string that can be sent via
- * HTTP
+ * The type of function that is capable of taking in any type of data and
+ * returning a string that can be sent via HTTP.
  */
-import { HTTPError } from "../error/http-error";
-
 export type BodyPrepperFunction = (data: any) => string;
 
 export const defaultBodyPrepperImplementation: BodyPrepperFunction = (data: any): string => {
@@ -34,10 +32,10 @@ export const defaultBodyPrepperImplementation: BodyPrepperFunction = (data: any)
 			return data.toString();
 		
 		case "undefined":
-			throw new HTTPError("Attempted to send undefined body to client.");
+			throw new Error("Attempted to send undefined body to client.");
 		
 		default:
-			throw new HTTPError(`Attempted to send body of unknown type ('${bodyType}') to client.`);
+			throw new Error(`Attempted to send body of unknown type ('${bodyType}') to client.`);
 		
 	}
 
